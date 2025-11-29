@@ -8,14 +8,15 @@ import type {
   SignUpFormValues,
   SignUpInResponse,
 } from "../types/auth";
-import { signIn, signUp } from "../utils/auth-query-functions";
+import { signIn, signOut, signUp } from "../utils/auth-query-functions";
+import { clearRefreshTokenCookie } from "../utils/cookie-utils";
 import useAccessToken from "./use-access-token";
 import useUser from "./use-user";
 
 const useAuth = () => {
   const router = useRouter();
-  const { setAccessToken } = useAccessToken();
-  const { setUser } = useUser();
+  const { setAccessToken, clearAccessToken } = useAccessToken();
+  const { setUser, clearUser } = useUser();
 
   const signUpMutation = useMutation<
     SignUpInResponse,
@@ -63,9 +64,33 @@ const useAuth = () => {
     },
   });
 
+  const signOutMutation = useMutation<
+    void,
+    AxiosError<{ message: string }>,
+    void
+  >({
+    mutationFn: async () => {
+      return signOut();
+    },
+    onError: (error) => {
+      const message = error.response?.data?.message || "Failed to sign out";
+
+      toast.error(message, { id: "sign-out-error" });
+    },
+    onSuccess: async () => {
+      clearAccessToken();
+      clearUser();
+      await clearRefreshTokenCookie();
+
+      toast.success("Signed out successfully", { id: "sign-out-success" });
+      router.push("/auth/sign-in");
+    },
+  });
+
   return {
     signUpMutation,
     signInMutation,
+    signOutMutation,
   };
 };
 
