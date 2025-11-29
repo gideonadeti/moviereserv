@@ -27,3 +27,12 @@ export const signInFormSchema = z.object({
   email: emailSchema,
   password: strongPasswordSchema,
 });
+
+export const forgotPasswordFormSchema = z.object({
+  email: emailSchema,
+});
+
+export const resetPasswordFormSchema = z.object({
+  token: z.string().trim().min(1, "Token is required"),
+  password: strongPasswordSchema,
+});
