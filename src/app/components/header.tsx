@@ -4,6 +4,7 @@ import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 
 import { useRefreshAccessToken } from "@/app/components/auth-provider";
+import DeleteAccountDialog from "@/app/components/delete-account-dialog";
 import ThemeToggler from "@/app/components/theme-toggler";
 import useAuth from "@/app/hooks/use-auth";
 import useUser from "@/app/hooks/use-user";
@@ -70,11 +71,12 @@ const Header = () => {
                 <DropdownMenuItem
                   onClick={handleSignOut}
                   disabled={signOutMutation.isPending}
-                  variant="destructive"
                 >
                   <LogOut className="size-4" />
                   <span>Sign Out</span>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DeleteAccountDialog />
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
