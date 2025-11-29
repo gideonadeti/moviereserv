@@ -1,6 +1,13 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+import { useRefreshAccessToken } from "@/app/components/auth-provider";
 import SignUpForm from "@/app/components/forms/sign-up-form";
+import useAccessToken from "@/app/hooks/use-access-token";
+import useUser from "@/app/hooks/use-user";
 import {
   Card,
   CardContent,
@@ -11,6 +18,32 @@ import {
 } from "@/components/ui/card";
 
 const Page = () => {
+  const router = useRouter();
+  const { user } = useUser();
+  const { accessToken } = useAccessToken();
+  const { isRefreshing } = useRefreshAccessToken();
+
+  useEffect(() => {
+    // Wait for token refresh to complete before checking auth state
+    if (!isRefreshing && (user || accessToken)) {
+      router.push("/dashboard");
+    }
+  }, [user, accessToken, isRefreshing, router]);
+
+  // Show loading state while checking auth
+  if (isRefreshing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  // Don't render the form if user is authenticated (redirect will happen)
+  if (user || accessToken) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md">
