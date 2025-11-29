@@ -9,9 +9,11 @@ import type {
 } from "../types/auth";
 import { signIn, signUp } from "../utils/auth-query-functions";
 import useAccessToken from "./use-access-token";
+import useUser from "./use-user";
 
 const useAuth = () => {
   const { setAccessToken } = useAccessToken();
+  const { setUser } = useUser();
 
   const signUpMutation = useMutation<
     SignUpInResponse,
@@ -28,8 +30,9 @@ const useAuth = () => {
 
       toast.error(message, { id: "sign-up-error" });
     },
-    onSuccess: ({ accessToken }) => {
+    onSuccess: ({ accessToken, user }) => {
       setAccessToken(accessToken);
+      setUser(user);
 
       toast.success("Signed up successfully", { id: "sign-up-success" });
     },
@@ -48,8 +51,10 @@ const useAuth = () => {
 
       toast.error(message, { id: "sign-in-error" });
     },
-    onSuccess: ({ accessToken }) => {
+    onSuccess: ({ accessToken, user }) => {
       setAccessToken(accessToken);
+      setUser(user);
+
       toast.success("Signed in successfully", { id: "sign-in-success" });
     },
   });
