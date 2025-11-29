@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 
 import useAuth from "@/app/hooks/use-auth";
@@ -58,7 +59,15 @@ const SignInForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>Password</FormLabel>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-primary font-medium hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <FormControl>
                 <PasswordInput
                   placeholder="********"
