@@ -34,3 +34,14 @@ export const refreshAccessToken = async () => {
     throw error;
   }
 };
+
+export const signOut = async () => {
+  try {
+    const response = await axios.post("/auth/sign-out");
+
+    return response.data;
+  } catch (error) {
+    console.error("Error from `signOut`:", error);
+    throw error;
+  }
+};
