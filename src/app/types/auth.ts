@@ -1,6 +1,8 @@
 import type { z } from "zod";
 
 import type {
+  forgotPasswordFormSchema,
+  resetPasswordFormSchema,
   signInFormSchema,
   signUpFormSchema,
 } from "../libs/auth-form-schemas";
@@ -26,3 +28,5 @@ export enum Role {
 
 export type SignUpFormValues = z.infer<typeof signUpFormSchema>;
 export type SignInFormValues = z.infer<typeof signInFormSchema>;
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordFormSchema>;
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordFormSchema>;
