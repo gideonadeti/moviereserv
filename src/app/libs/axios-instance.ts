@@ -28,6 +28,8 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
+// TODO: Improve this function to check if the 401 is due to an expired/invalid access token
+// TODO: Deliberately set short expiration time for access token to test this functionality
 // Check if the 401 is due to an expired/invalid access token
 // by examining the error message from the backend
 const isTokenExpiredError = (error: AxiosError): boolean => {
