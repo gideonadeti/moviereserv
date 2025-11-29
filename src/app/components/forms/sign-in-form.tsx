@@ -45,6 +45,7 @@ const SignInForm = () => {
                 <Input
                   type="email"
                   placeholder="johndoe@gmail.com"
+                  autoComplete="email"
                   {...field}
                 />
               </FormControl>
@@ -59,7 +60,11 @@ const SignInForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="********" {...field} />
+                <PasswordInput
+                  placeholder="********"
+                  {...field}
+                  autoComplete="current-password"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -68,7 +73,6 @@ const SignInForm = () => {
         <SubmitButton
           normalText="Sign In"
           pendingText="Signing in..."
-          isDisabled={!form.formState.isDirty}
           isPending={signInMutation.isPending}
         />
       </form>
