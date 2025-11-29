@@ -45,3 +45,14 @@ export const signOut = async () => {
     throw error;
   }
 };
+
+export const deleteAccount = async () => {
+  try {
+    const response = await axios.post("/auth/delete-account");
+
+    return response.data;
+  } catch (error) {
+    console.error("Error from `deleteAccount`:", error);
+    throw error;
+  }
+};
