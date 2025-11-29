@@ -27,8 +27,8 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = (data: SignUpFormValues) => {
-    console.log(data);
+  const onSubmit = (signUpFormValues: SignUpFormValues) => {
+    console.log(`signUpFormValues: ${JSON.stringify(signUpFormValues)}`);
   };
 
   return (
