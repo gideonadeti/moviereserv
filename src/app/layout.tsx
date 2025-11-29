@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import "./globals.css";
+import Footer from "@/app/components/footer";
+import Header from "@/app/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "./components/auth-provider";
 import QcProvider from "./components/qc-provider";
@@ -22,7 +24,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         <QcProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </AuthProvider>
         </QcProvider>
         <Toaster richColors />
       </body>
