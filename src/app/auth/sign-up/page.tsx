@@ -1,5 +1,7 @@
+import SignUpForm from "@/app/components/forms/sign-up-form";
+
 const Page = () => {
-  return null;
+  return <SignUpForm />;
 };
 
 export default Page;
