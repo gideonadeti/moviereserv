@@ -8,7 +8,12 @@ import type {
   SignUpFormValues,
   SignUpInResponse,
 } from "../types/auth";
-import { signIn, signOut, signUp } from "../utils/auth-query-functions";
+import {
+  deleteAccount,
+  signIn,
+  signOut,
+  signUp,
+} from "../utils/auth-query-functions";
 import { clearRefreshTokenCookie } from "../utils/cookie-utils";
 import useAccessToken from "./use-access-token";
 import useUser from "./use-user";
@@ -87,10 +92,37 @@ const useAuth = () => {
     },
   });
 
+  const deleteAccountMutation = useMutation<
+    void,
+    AxiosError<{ message: string }>,
+    void
+  >({
+    mutationFn: async () => {
+      return deleteAccount();
+    },
+    onError: (error) => {
+      const message =
+        error.response?.data?.message || "Failed to delete account";
+
+      toast.error(message, { id: "delete-account-error" });
+    },
+    onSuccess: async () => {
+      clearAccessToken();
+      clearUser();
+      await clearRefreshTokenCookie();
+
+      toast.success("Account deleted successfully", {
+        id: "delete-account-success",
+      });
+      router.push("/auth/sign-in");
+    },
+  });
+
   return {
     signUpMutation,
     signInMutation,
     signOutMutation,
+    deleteAccountMutation,
   };
 };
 
