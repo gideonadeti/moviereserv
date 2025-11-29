@@ -9,7 +9,9 @@ export const proxy = (request: NextRequest) => {
   if (
     refreshToken &&
     (pathname.startsWith("/auth/sign-in") ||
-      pathname.startsWith("/auth/sign-up"))
+      pathname.startsWith("/auth/sign-up") ||
+      pathname.startsWith("/auth/forgot-password") ||
+      pathname.startsWith("/auth/reset-password"))
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
@@ -18,5 +20,10 @@ export const proxy = (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/auth/sign-in", "/auth/sign-up"],
+  matcher: [
+    "/auth/sign-in",
+    "/auth/sign-up",
+    "/auth/forgot-password",
+    "/auth/reset-password",
+  ],
 };
