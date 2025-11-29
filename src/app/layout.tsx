@@ -7,6 +7,7 @@ import Header from "@/app/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "./components/auth-provider";
 import QcProvider from "./components/qc-provider";
+import ThemeProvider from "./components/theme-provider";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -25,11 +26,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <body className={`${inter.variable} antialiased`}>
         <QcProvider>
           <AuthProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </ThemeProvider>
           </AuthProvider>
         </QcProvider>
         <Toaster richColors />
