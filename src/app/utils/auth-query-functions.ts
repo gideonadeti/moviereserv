@@ -1,5 +1,10 @@
 import axios from "../libs/axios-instance";
-import type { SignInFormValues, SignUpFormValues } from "../types/auth";
+import type {
+  ForgotPasswordFormValues,
+  ResetPasswordFormValues,
+  SignInFormValues,
+  SignUpFormValues,
+} from "../types/auth";
 
 export const signUp = async (signUpFormValues: SignUpFormValues) => {
   try {
@@ -53,6 +58,38 @@ export const deleteAccount = async () => {
     return response.data;
   } catch (error) {
     console.error("Error from `deleteAccount`:", error);
+    throw error;
+  }
+};
+
+export const forgotPassword = async (
+  forgotPasswordFormValues: ForgotPasswordFormValues,
+) => {
+  try {
+    const response = await axios.post(
+      "/auth/forgot-password",
+      forgotPasswordFormValues,
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error from `forgotPassword`:", error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (
+  resetPasswordFormValues: ResetPasswordFormValues,
+) => {
+  try {
+    const response = await axios.post(
+      "/auth/reset-password",
+      resetPasswordFormValues,
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error from `resetPassword`:", error);
     throw error;
   }
 };
