@@ -3,9 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import useAuth from "@/app/hooks/use-auth";
 import { signUpFormSchema } from "@/app/libs/auth-form-schemas";
 import type { SignUpFormValues } from "@/app/types/auth";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import PasswordInput from "./password-input";
+import SubmitButton from "./submit-button";
 
 const SignUpForm = () => {
+  const { signUpMutation } = useAuth();
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
@@ -28,7 +30,7 @@ const SignUpForm = () => {
   });
 
   const onSubmit = (signUpFormValues: SignUpFormValues) => {
-    console.log(`signUpFormValues: ${JSON.stringify(signUpFormValues)}`);
+    signUpMutation.mutate({ signUpFormValues });
   };
 
   return (
@@ -77,9 +79,12 @@ const SignUpForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" size="lg">
-          Sign Up
-        </Button>
+        <SubmitButton
+          normalText="Sign Up"
+          pendingText="Signing up..."
+          isDisabled={!form.formState.isDirty}
+          isPending={signUpMutation.isPending}
+        />
       </form>
     </Form>
   );
