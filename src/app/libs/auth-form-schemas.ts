@@ -12,13 +12,18 @@ export const strongPasswordSchema = z
     "Password must contain at least one special character"
   );
 
+export const emailSchema = z
+  .string()
+  .min(1, { message: "Email is required" })
+  .pipe(z.email({ message: "Enter a valid email" }));
+
 export const signUpFormSchema = z.object({
-  name: z.string().trim().min(1),
-  email: z.email(),
+  name: z.string().trim().min(1, "Name is required"),
+  email: emailSchema,
   password: strongPasswordSchema,
 });
 
 export const signInFormSchema = z.object({
-  email: z.email(),
+  email: emailSchema,
   password: strongPasswordSchema,
 });
