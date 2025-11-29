@@ -4,6 +4,7 @@ import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 
 import { useRefreshAccessToken } from "@/app/components/auth-provider";
+import ThemeToggler from "@/app/components/theme-toggler";
 import useAuth from "@/app/hooks/use-auth";
 import useUser from "@/app/hooks/use-user";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ const Header = () => {
 
         {/* Authentication UI */}
         <div className="flex items-center gap-4">
+          <ThemeToggler />
           {isRefreshing ? (
             <div className="flex items-center gap-2">
               <div className="size-8 animate-pulse rounded-full bg-muted" />
