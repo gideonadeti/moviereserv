@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import type {
@@ -12,6 +13,7 @@ import useAccessToken from "./use-access-token";
 import useUser from "./use-user";
 
 const useAuth = () => {
+  const router = useRouter();
   const { setAccessToken } = useAccessToken();
   const { setUser } = useUser();
 
@@ -35,6 +37,7 @@ const useAuth = () => {
       setUser(user);
 
       toast.success("Signed up successfully", { id: "sign-up-success" });
+      router.push("/dashboard");
     },
   });
 
@@ -56,6 +59,7 @@ const useAuth = () => {
       setUser(user);
 
       toast.success("Signed in successfully", { id: "sign-in-success" });
+      router.push("/dashboard");
     },
   });
 
