@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import useAccessToken from "../hooks/use-access-token";
 import useUser from "../hooks/use-user";
 import { refreshAccessToken } from "../utils/auth-query-functions";
+import { clearRefreshTokenCookie } from "../utils/cookie-utils";
 
 interface RefreshAccessTokenContextType {
   isRefreshing: boolean;
@@ -42,6 +43,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // If refresh fails, clear auth state (user is not authenticated)
         clearAccessToken();
         clearUser();
+        await clearRefreshTokenCookie();
       } finally {
         setIsRefreshing(false);
       }
