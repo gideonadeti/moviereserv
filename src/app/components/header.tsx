@@ -3,6 +3,7 @@
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 
+import { useRefreshAccessToken } from "@/app/components/auth-provider";
 import useAuth from "@/app/hooks/use-auth";
 import useUser from "@/app/hooks/use-user";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 const Header = () => {
   const { user } = useUser();
   const { signOutMutation } = useAuth();
+  const { isRefreshing } = useRefreshAccessToken();
 
   const handleSignOut = () => {
     signOutMutation.mutate();
@@ -42,7 +44,7 @@ const Header = () => {
           >
             Home
           </Link>
-          {user && (
+          {(user || isRefreshing) && (
             <Link
               href="/dashboard"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -54,7 +56,14 @@ const Header = () => {
 
         {/* Authentication UI */}
         <div className="flex items-center gap-4">
-          {user ? (
+          {isRefreshing ? (
+            <div className="flex items-center gap-2">
+              <div className="size-8 animate-pulse rounded-full bg-muted" />
+              <span className="hidden sm:inline-block text-sm text-muted-foreground">
+                Loading...
+              </span>
+            </div>
+          ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
