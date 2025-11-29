@@ -37,24 +37,6 @@ const Header = () => {
           <span className="text-lg font-semibold">Moviereserv</span>
         </Link>
 
-        {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href="/"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Home
-          </Link>
-          {(user || isRefreshing) && (
-            <Link
-              href="/dashboard"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Dashboard
-            </Link>
-          )}
-        </nav>
-
         {/* Authentication UI */}
         <div className="flex items-center gap-4">
           <ThemeToggler />
