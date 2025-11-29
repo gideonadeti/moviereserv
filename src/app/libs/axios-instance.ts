@@ -2,6 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 import useAccessToken from "../hooks/use-access-token";
 import { refreshAccessToken } from "../utils/auth-query-functions";
+import { clearRefreshTokenCookie } from "../utils/cookie-utils";
 
 const axiosInstance = axios.create({
   baseURL:
@@ -105,6 +106,9 @@ axiosInstance.interceptors.response.use(
         return axiosInstance.request(originalRequest);
       } catch (error) {
         processQueue(error, null);
+
+        // Clear the invalid refresh token cookie
+        await clearRefreshTokenCookie();
 
         // Only redirect on auth failures (401 after refresh failed)
         if (typeof window !== "undefined") {
