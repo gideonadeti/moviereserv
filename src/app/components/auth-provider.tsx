@@ -6,19 +6,19 @@ import useAccessToken from "../hooks/use-access-token";
 import useUser from "../hooks/use-user";
 import { refreshAccessToken } from "../utils/auth-query-functions";
 
-interface AuthRefreshContextType {
+interface RefreshAccessTokenContextType {
   isRefreshing: boolean;
 }
 
-const AuthRefreshContext = createContext<AuthRefreshContextType | undefined>(
-  undefined
-);
+const RefreshAccessTokenContext = createContext<
+  RefreshAccessTokenContextType | undefined
+>(undefined);
 
-export const useAuthRefresh = () => {
-  const context = useContext(AuthRefreshContext);
+export const useRefreshAccessToken = () => {
+  const context = useContext(RefreshAccessTokenContext);
 
   if (context === undefined) {
-    throw new Error("useAuthRefresh must be used within AuthProvider");
+    throw new Error("useRefreshAccessToken must be used within AuthProvider");
   }
 
   return context;
@@ -49,9 +49,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [setAccessToken, setUser, clearAccessToken, clearUser]);
 
   return (
-    <AuthRefreshContext.Provider value={{ isRefreshing }}>
+    <RefreshAccessTokenContext.Provider value={{ isRefreshing }}>
       {children}
-    </AuthRefreshContext.Provider>
+    </RefreshAccessTokenContext.Provider>
   );
 };
 
