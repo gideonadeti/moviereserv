@@ -4,7 +4,8 @@ import useAccessToken from "../hooks/use-access-token";
 import { refreshAccessToken } from "../utils/auth-query-functions";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "http://localhost:3000",
+  baseURL:
+    process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "http://localhost:3000/api/v1",
   withCredentials: true,
 });
 
