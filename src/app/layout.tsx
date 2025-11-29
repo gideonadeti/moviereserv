@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import AuthProvider from "./components/auth-provider";
 import QcProvider from "./components/qc-provider";
 
 const inter = Inter({
@@ -20,7 +21,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <QcProvider>{children}</QcProvider>
+        <QcProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QcProvider>
         <Toaster richColors />
       </body>
     </html>
