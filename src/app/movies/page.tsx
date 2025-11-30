@@ -20,6 +20,7 @@ const MoviesPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { moviesQuery, genresQuery } = useMovies();
+  const isLoading = moviesQuery.isPending || genresQuery.isPending;
 
   // Initialize filters from URL params
   const [filters, setFilters] = useState<FilterState>(() => {
@@ -108,14 +109,38 @@ const MoviesPage = () => {
     []
   );
 
-  if (moviesQuery.isPending || genresQuery.isPending) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
-          <Skeleton className="h-10 w-full" />
+          {/* Header Skeleton */}
+          <div className="space-y-2">
+            <Skeleton className="h-9 w-32" />
+            <Skeleton className="h-5 w-48" />
+          </div>
+
+          {/* Filters Skeleton */}
+          <div className="space-y-4">
+            {/* Title Search Skeleton */}
+            <Skeleton className="h-9 w-full" />
+
+            {/* Date Pickers and Genre Filter Skeleton */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Skeleton className="h-9 w-full sm:w-[200px]" />
+              <Skeleton className="h-9 w-full sm:w-[200px]" />
+              <Skeleton className="h-9 flex-1" />
+            </div>
+
+            {/* Sort Skeleton */}
+            <div className="flex justify-end">
+              <Skeleton className="h-9 w-[200px]" />
+            </div>
+          </div>
+
+          {/* Movies Grid Skeleton */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i.toString()} className="aspect-2/3 w-full" />
+              <Skeleton key={i.toString()} className="h-[500px] w-full" />
             ))}
           </div>
         </div>
