@@ -4,7 +4,6 @@ import { useRefreshAccessToken } from "@/app/components/auth-provider";
 import LandingPage from "@/app/components/landing-page";
 import useMovies from "@/app/hooks/use-movies";
 import useUser from "@/app/hooks/use-user";
-import AppSidebar from "./components/app-sidebar";
 
 const Page = () => {
   const { moviesQuery, genresQuery } = useMovies();
@@ -27,13 +26,10 @@ const Page = () => {
   // If authenticated, return null (as requested)
   if (user) {
     return (
-      <div className="flex">
-        <AppSidebar />
-        <div className="flex-1">
-          <h1>Movies</h1>
-          <p>Total movies: {movies.length}</p>
-          <p>Total genres: {genres.length}</p>
-        </div>
+      <div>
+        <h1>Movies</h1>
+        <p>Total movies: {movies.length}</p>
+        <p>Total genres: {genres.length}</p>
       </div>
     );
   }

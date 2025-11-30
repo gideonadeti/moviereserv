@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 
 import "./globals.css";
 import Header from "@/app/components/header";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "./components/auth-provider";
 import QcProvider from "./components/qc-provider";
@@ -32,10 +31,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               enableSystem
               disableTransitionOnChange
             >
-              <SidebarProvider className="flex flex-col">
+              <div className="flex flex-col min-h-screen">
                 <Header />
                 <main className="flex-1">{children}</main>
-              </SidebarProvider>
+              </div>
             </ThemeProvider>
           </AuthProvider>
         </QcProvider>
