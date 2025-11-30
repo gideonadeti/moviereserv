@@ -1,15 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { Calendar, Film, Ticket, Users } from "lucide-react";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Footer from "./footer";
 
 const LandingPage = () => {
   return (
@@ -18,8 +19,7 @@ const LandingPage = () => {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
         <div className="flex flex-col items-center text-center space-y-6">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-            Welcome to{" "}
-            <span className="text-primary">Moviereserv</span>
+            Welcome to <span className="text-primary">Moviereserv</span>
           </h1>
           <p className="max-w-2xl text-lg sm:text-xl text-muted-foreground">
             Your one-stop solution for booking movie tickets. Reserve your seats
@@ -102,9 +102,11 @@ const LandingPage = () => {
           </Button>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
 
 export default LandingPage;
-
