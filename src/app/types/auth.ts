@@ -16,12 +16,12 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: Role;
+  role: UserRole;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export enum Role {
+export enum UserRole {
   ADMIN = "ADMIN",
   NADMIN = "NADMIN",
 }
