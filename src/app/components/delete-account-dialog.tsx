@@ -1,42 +1,31 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
-
+import { Loader } from "lucide-react";
 import useAuth from "@/app/hooks/use-auth";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
-const DeleteAccountDialog = () => {
+interface DeleteAccountDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const DeleteAccountDialog = ({
+  open,
+  onOpenChange,
+}: DeleteAccountDialogProps) => {
   const { deleteAccountMutation } = useAuth();
 
-  const handleDeleteAccount = () => {
-    deleteAccountMutation.mutate();
-  };
-
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <DropdownMenuItem
-          variant="destructive"
-          disabled={deleteAccountMutation.isPending}
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <Trash2 className="size-4" />
-          <span>Delete Account</span>
-        </DropdownMenuItem>
-      </AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
         onEscapeKeyDown={(e) => {
           e.preventDefault();
@@ -58,13 +47,20 @@ const DeleteAccountDialog = () => {
           <AlertDialogCancel disabled={deleteAccountMutation.isPending}>
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDeleteAccount}
+          <Button
+            variant="destructive"
             disabled={deleteAccountMutation.isPending}
-            className="bg-destructive hover:bg-destructive/90"
+            onClick={() => deleteAccountMutation.mutate({ onOpenChange })}
           >
-            {deleteAccountMutation.isPending ? "Deleting..." : "Delete Account"}
-          </AlertDialogAction>
+            {deleteAccountMutation.isPending ? (
+              <>
+                <Loader className="animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete Account"
+            )}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
