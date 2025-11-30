@@ -99,7 +99,7 @@ const useAuth = () => {
   const deleteAccountMutation = useMutation<
     void,
     AxiosError<{ message: string }>,
-    void
+    { onOpenChange: (open: boolean) => void }
   >({
     mutationFn: async () => {
       return deleteAccount();
@@ -110,7 +110,8 @@ const useAuth = () => {
 
       toast.error(message, { id: "delete-account-error" });
     },
-    onSuccess: async () => {
+    onSuccess: async (_, { onOpenChange }) => {
+      onOpenChange(false);
       clearAccessToken();
       clearUser();
       await clearRefreshTokenCookie();
