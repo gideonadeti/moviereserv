@@ -37,7 +37,11 @@ const DeleteAccountDialog = () => {
           <span>Delete Account</span>
         </DropdownMenuItem>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+        }}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Account</AlertDialogTitle>
           <AlertDialogDescription>
