@@ -6,11 +6,13 @@ import useMovies from "@/app/hooks/use-movies";
 import useUser from "@/app/hooks/use-user";
 
 const Page = () => {
-  const { moviesQuery } = useMovies();
+  const { moviesQuery, genresQuery } = useMovies();
   const { user } = useUser();
   const { isRefreshing } = useRefreshAccessToken();
-  const isLoading = isRefreshing || moviesQuery.isPending;
+  const isLoading =
+    isRefreshing || moviesQuery.isPending || genresQuery.isPending;
   const movies = moviesQuery.data || [];
+  const genres = genresQuery.data || [];
 
   // Show loading state while checking auth
   if (isLoading) {
@@ -27,6 +29,7 @@ const Page = () => {
       <div>
         <h1>Movies</h1>
         <p>Total movies: {movies.length}</p>
+        <p>Total genres: {genres.length}</p>
       </div>
     );
   }
