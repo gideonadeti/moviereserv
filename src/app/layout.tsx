@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/app/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "./components/auth-provider";
+import Footer from "./components/footer";
 import QcProvider from "./components/qc-provider";
 import ThemeProvider from "./components/theme-provider";
 
@@ -34,6 +35,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <div className="flex flex-col min-h-screen">
                 <Header />
                 <main className="flex-1">{children}</main>
+                <Footer />
               </div>
             </ThemeProvider>
           </AuthProvider>

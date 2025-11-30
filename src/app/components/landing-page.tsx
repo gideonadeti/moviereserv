@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Footer from "./footer";
 
 const LandingPage = () => {
   return (
@@ -102,9 +101,6 @@ const LandingPage = () => {
           </Button>
         </div>
       </section>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };
