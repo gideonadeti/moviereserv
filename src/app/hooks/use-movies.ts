@@ -7,17 +7,20 @@ import type { Movie } from "../types/movie";
 import { fetchMovies } from "../utils/movies-query-functions";
 
 const useMovies = () => {
-  const moviesQuery = useQuery<Movie[], AxiosError<{ message: string }>>({
-    queryKey: ["movies"],
-    queryFn: async () => {
-      return fetchMovies();
-    },
-  });
+  const moviesQuery = useQuery<Movie[], AxiosError<{ status_message: string }>>(
+    {
+      queryKey: ["movies"],
+      queryFn: async () => {
+        return fetchMovies();
+      },
+    }
+  );
 
   useEffect(() => {
     if (moviesQuery.isError) {
       const message =
-        moviesQuery.error?.response?.data?.message || "Failed to fetch movies";
+        moviesQuery.error?.response?.data?.status_message ||
+        "Failed to fetch movies";
 
       toast.error(message, { id: "fetch-movies-error" });
     }
