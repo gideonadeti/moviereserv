@@ -26,7 +26,7 @@ const Page = () => {
   useEffect(() => {
     // Wait for token refresh to complete before checking auth state
     if (!isRefreshing && (user || accessToken)) {
-      router.push("/dashboard");
+      router.push("/");
     }
   }, [user, accessToken, isRefreshing, router]);
 

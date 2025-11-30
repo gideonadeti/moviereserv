@@ -47,7 +47,7 @@ const useAuth = () => {
       setUser(user);
 
       toast.success("Signed up successfully", { id: "sign-up-success" });
-      router.push("/dashboard");
+      router.push("/");
     },
   });
 
@@ -69,7 +69,7 @@ const useAuth = () => {
       setUser(user);
 
       toast.success("Signed in successfully", { id: "sign-in-success" });
-      router.push("/dashboard");
+      router.push("/");
     },
   });
 

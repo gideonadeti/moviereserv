@@ -13,7 +13,7 @@ export const proxy = (request: NextRequest) => {
       pathname.startsWith("/auth/forgot-password") ||
       pathname.startsWith("/auth/reset-password"))
   ) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

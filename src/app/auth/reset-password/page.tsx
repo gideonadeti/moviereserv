@@ -29,7 +29,7 @@ const ResetPasswordContent = () => {
   useEffect(() => {
     // Wait for token refresh to complete before checking auth state
     if (!isRefreshing && (user || accessToken)) {
-      router.push("/dashboard");
+      router.push("/");
     }
   }, [user, accessToken, isRefreshing, router]);
 
@@ -87,9 +87,7 @@ const ResetPasswordContent = () => {
             <CardTitle className="text-3xl font-bold tracking-tight">
               Reset Password
             </CardTitle>
-            <CardDescription>
-              Enter your new password below
-            </CardDescription>
+            <CardDescription>Enter your new password below</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -126,4 +124,3 @@ const Page = () => {
 };
 
 export default Page;
-
