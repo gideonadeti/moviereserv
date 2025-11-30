@@ -29,24 +29,8 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-// TODO: Improve this function to check if the 401 is due to an expired/invalid access token
-// TODO: Deliberately set short expiration time for access token to test this functionality
-// Check if the 401 is due to an expired/invalid access token
-// by examining the error message from the backend
-const isTokenExpiredError = (error: AxiosError): boolean => {
-  const errorMessage =
-    (error.response?.data as { message?: string })?.message?.toLowerCase() ||
-    "";
-
-  // Check for token-related error messages
-  return (
-    errorMessage.includes("token expired") ||
-    errorMessage.includes("token invalid") ||
-    errorMessage.includes("expired or invalid") ||
-    errorMessage.includes("jwt expired") ||
-    errorMessage.includes("invalid token")
-  );
-};
+const isTokenExpiredError = (error: AxiosError<{ message: string }>) =>
+  error.response?.data.message === "Access token has expired";
 
 axiosInstance.interceptors.request.use(async (config) => {
   const { accessToken } = useAccessToken.getState();
