@@ -3,8 +3,8 @@ import type { AxiosError } from "axios";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-import type { Movie } from "../types/movie";
-import { fetchMovies } from "../utils/movies-query-functions";
+import type { Genre, Movie } from "../types/movie";
+import { fetchGenres, fetchMovies } from "../utils/movies-query-functions";
 
 const useMovies = () => {
   const moviesQuery = useQuery<Movie[], AxiosError<{ status_message: string }>>(
@@ -12,6 +12,15 @@ const useMovies = () => {
       queryKey: ["movies"],
       queryFn: async () => {
         return fetchMovies();
+      },
+    }
+  );
+
+  const genresQuery = useQuery<Genre[], AxiosError<{ status_message: string }>>(
+    {
+      queryKey: ["genres"],
+      queryFn: async () => {
+        return fetchGenres();
       },
     }
   );
@@ -28,6 +37,7 @@ const useMovies = () => {
 
   return {
     moviesQuery,
+    genresQuery,
   };
 };
 
