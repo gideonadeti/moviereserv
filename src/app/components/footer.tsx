@@ -1,8 +1,15 @@
 "use client";
 
 import { ChevronUp, Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Footer = () => {
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -74,7 +81,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-xs text-muted-foreground mt-2 mb-0">
-            &copy; {new Date().getFullYear()} Moviereserv. All Rights Reserved.
+            &copy; {currentYear ?? 2025} Moviereserv. All Rights Reserved.
           </p>
 
           {/* Buy me coffee button */}
