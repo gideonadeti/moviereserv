@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import "./globals.css";
-import Footer from "@/app/components/footer";
 import Header from "@/app/components/header";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "./components/auth-provider";
 import QcProvider from "./components/qc-provider";
@@ -32,11 +32,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               enableSystem
               disableTransitionOnChange
             >
-              <div className="flex min-h-screen flex-col">
+              <SidebarProvider className="flex flex-col">
                 <Header />
                 <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
+              </SidebarProvider>
             </ThemeProvider>
           </AuthProvider>
         </QcProvider>
