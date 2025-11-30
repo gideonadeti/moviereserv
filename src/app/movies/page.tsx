@@ -16,7 +16,7 @@ import {
 
 const MOVIES_PER_BATCH = 20;
 
-const MoviesPage = () => {
+const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { moviesQuery, genresQuery } = useMovies();
@@ -210,4 +210,4 @@ const MoviesPage = () => {
   );
 };
 
-export default MoviesPage;
+export default Page;
