@@ -168,7 +168,19 @@ const MovieDetailPage = () => {
                 <span className="font-medium">{formattedReleaseDate}</span>
                 {movieGenres.length > 0 && <span>·</span>}
                 {movieGenres.length > 0 && (
-                  <span>{movieGenres.map((g) => g.name).join(", ")}</span>
+                  <span className="flex flex-wrap items-center gap-1">
+                    {movieGenres.map((g, index) => (
+                      <span key={g.id}>
+                        <Link
+                          href={`/movies?genreIds=${g.id}`}
+                          className="text-primary hover:underline transition-colors"
+                        >
+                          {g.name}
+                        </Link>
+                        {index < movieGenres.length - 1 && <span>, </span>}
+                      </span>
+                    ))}
+                  </span>
                 )}
               </div>
 
