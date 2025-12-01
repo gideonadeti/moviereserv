@@ -1,7 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,150 +13,25 @@ import {
   type FilterState,
   useMoviesFilter,
 } from "../hooks/use-movies-filter";
+import { useMoviesPagination } from "./use-movies-pagination";
+import { useMoviesUrlFilters } from "./use-movies-url-filters";
 
 const MOVIES_PER_BATCH = 20;
 
-const buildFiltersFromSearchParams = (params: URLSearchParams) => {
-  const title = params.get("title") ?? defaultFilters.title;
-  const startDate = params.get("startDate");
-  const endDate = params.get("endDate");
-  const genreIdsParam = params.get("genreIds");
-  const genreIds =
-    genreIdsParam && genreIdsParam.length > 0
-      ? genreIdsParam
-          .split(",")
-          .map((value) => Number.parseInt(value, 10))
-          .filter((value) => !Number.isNaN(value))
-      : defaultFilters.genreIds;
-
-  const sortBy =
-    (params.get("sortBy") as FilterState["sortBy"]) ?? defaultFilters.sortBy;
-
-  const sortOrder =
-    (params.get("sortOrder") as FilterState["sortOrder"]) ??
-    defaultFilters.sortOrder;
-
-  return {
-    ...defaultFilters,
-    title,
-    startDate,
-    endDate,
-    genreIds,
-    sortBy,
-    sortOrder,
-  };
-};
-
-const buildSearchParamsFromFilters = (
-  filters: FilterState,
-  baseSearchParamsString: string
-) => {
-  const params = new URLSearchParams(baseSearchParamsString);
-  const trimmedTitle = filters.title.trim();
-
-  if (trimmedTitle) {
-    params.set("title", trimmedTitle);
-  } else {
-    params.delete("title");
-  }
-
-  if (filters.startDate) {
-    params.set("startDate", filters.startDate);
-  } else {
-    params.delete("startDate");
-  }
-
-  if (filters.endDate) {
-    params.set("endDate", filters.endDate);
-  } else {
-    params.delete("endDate");
-  }
-
-  if (filters.genreIds.length > 0) {
-    params.set("genreIds", filters.genreIds.join(","));
-  } else {
-    params.delete("genreIds");
-  }
-
-  if (filters.sortBy !== defaultFilters.sortBy) {
-    params.set("sortBy", filters.sortBy);
-  } else {
-    params.delete("sortBy");
-  }
-
-  if (filters.sortOrder !== defaultFilters.sortOrder) {
-    params.set("sortOrder", filters.sortOrder);
-  } else {
-    params.delete("sortOrder");
-  }
-
-  return params;
-};
-
-const replaceUrlIfChanged = (
-  router: ReturnType<typeof useRouter>,
-  pathname: string,
-  currentSearchParamsString: string,
-  nextParams: URLSearchParams
-) => {
-  const nextSearch = nextParams.toString();
-  const nextUrl = nextSearch ? `${pathname}?${nextSearch}` : pathname;
-  const currentSearch = currentSearchParamsString;
-  const currentUrl = currentSearch ? `${pathname}?${currentSearch}` : pathname;
-
-  if (nextUrl !== currentUrl) {
-    router.replace(nextUrl, { scroll: false });
-  }
-};
-
 const Page = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
   const { moviesQuery, genresQuery } = useMovies();
   const isLoading = moviesQuery.isPending || genresQuery.isPending;
-  const [displayedCount, setDisplayedCount] = useState(MOVIES_PER_BATCH);
-  const [titleInput, setTitleInput] = useState<string>(() => {
-    return searchParams.get("title") ?? "";
-  });
-
   const movies = moviesQuery.data || [];
   const genres = genresQuery.data || [];
-  const searchParamsString = searchParams.toString();
-  const filters: FilterState = useMemo(
-    () => buildFiltersFromSearchParams(new URLSearchParams(searchParamsString)),
-    [searchParamsString]
-  );
+  const { filters, titleInput, setTitleInput, replaceFiltersInUrl } =
+    useMoviesUrlFilters();
 
-  // Sync input from URL and reset pagination when URL changes
-  useEffect(() => {
-    setTitleInput(filters.title ?? "");
-    setDisplayedCount(MOVIES_PER_BATCH);
-  }, [filters.title]);
-
-  // Debounce input changes into the URL (single source of truth)
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      const nextFilters: FilterState = {
-        ...filters,
-        title: titleInput,
-      };
-
-      const nextParams = buildSearchParamsFromFilters(
-        nextFilters,
-        searchParamsString
-      );
-
-      replaceUrlIfChanged(router, pathname, searchParamsString, nextParams);
-    }, 300);
-
-    return () => clearTimeout(handle);
-  }, [titleInput, filters, pathname, router, searchParamsString]);
+  const { displayedCount, reset, loadMore } =
+    useMoviesPagination(MOVIES_PER_BATCH);
 
   const filteredMovies = useMoviesFilter(movies, filters);
   const displayedMovies = filteredMovies.slice(0, displayedCount);
   const hasMore = displayedCount < filteredMovies.length;
-
   const hasActiveFilters =
     !!filters.title ||
     !!filters.startDate ||
@@ -169,67 +43,42 @@ const Page = () => {
     [movies]
   );
 
-  const replaceFiltersInUrl = (nextFilters: FilterState) => {
-    const nextParams = buildSearchParamsFromFilters(
-      nextFilters,
-      searchParamsString
-    );
-
-    replaceUrlIfChanged(router, pathname, searchParamsString, nextParams);
+  const updateFilters = (patch: Partial<FilterState>) => {
+    reset();
+    replaceFiltersInUrl({
+      ...filters,
+      ...patch,
+    });
   };
 
   const handleStartDateChange = (value: string | null) => {
-    setDisplayedCount(MOVIES_PER_BATCH);
-    replaceFiltersInUrl({
-      ...filters,
-      startDate: value,
-    });
+    updateFilters({ startDate: value });
   };
 
   const handleEndDateChange = (value: string | null) => {
-    setDisplayedCount(MOVIES_PER_BATCH);
-    replaceFiltersInUrl({
-      ...filters,
-      endDate: value,
-    });
+    updateFilters({ endDate: value });
   };
 
   const handleClearFilters = () => {
-    setDisplayedCount(MOVIES_PER_BATCH);
     setTitleInput("");
-
-    replaceFiltersInUrl(defaultFilters);
+    updateFilters(defaultFilters);
   };
 
   const handleToggleGenre = (genreId: number) => {
-    setDisplayedCount(MOVIES_PER_BATCH);
-
     const currentIds = filters.genreIds;
     const exists = currentIds.includes(genreId);
     const nextIds = exists
       ? currentIds.filter((id) => id !== genreId)
       : [...currentIds, genreId];
 
-    replaceFiltersInUrl({
-      ...filters,
-      genreIds: nextIds,
-    });
+    updateFilters({ genreIds: nextIds });
   };
 
   const handleSortChange = (
     sortBy: FilterState["sortBy"],
     sortOrder: FilterState["sortOrder"]
   ) => {
-    setDisplayedCount(MOVIES_PER_BATCH);
-    replaceFiltersInUrl({
-      ...filters,
-      sortBy,
-      sortOrder,
-    });
-  };
-
-  const handleLoadMore = () => {
-    setDisplayedCount((prev) => prev + MOVIES_PER_BATCH);
+    updateFilters({ sortBy, sortOrder });
   };
 
   if (isLoading) {
@@ -323,7 +172,7 @@ const Page = () => {
             {/* Load More Button */}
             {hasMore && (
               <div className="py-8 text-center">
-                <Button onClick={handleLoadMore} variant="outline">
+                <Button onClick={loadMore} variant="outline">
                   Load More
                 </Button>
                 <p className="mt-2 text-sm text-muted-foreground">
