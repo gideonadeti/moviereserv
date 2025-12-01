@@ -14,12 +14,14 @@ export interface FilterState {
   title: string;
   startDate: string | null;
   endDate: string | null;
+  genreIds: number[];
 }
 
 const defaultFilters: FilterState = {
   title: "",
   startDate: null,
   endDate: null,
+  genreIds: [],
 };
 
 const safeParseDate = (value: string | null): Date | null => {
@@ -81,6 +83,13 @@ export const useMoviesFilter = (
 
         return true;
       });
+    }
+
+    // Filter by genres
+    if (filters.genreIds.length > 0) {
+      filtered = filtered.filter((movie) =>
+        movie.genre_ids.some((genreId) => filters.genreIds.includes(genreId))
+      );
     }
 
     return filtered;
