@@ -6,26 +6,33 @@ import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import type { Genre } from "../types/movie";
 
 interface MoviesFiltersProps {
   title: string;
   startDate: string | null;
   endDate: string | null;
+  selectedGenreIds: number[];
+  genres: Genre[];
+  availableGenreIds: Set<number>;
   hasActiveFilters: boolean;
   onTitleChange: (value: string) => void;
   onStartDateChange: (value: string | null) => void;
   onEndDateChange: (value: string | null) => void;
+  onToggleGenre: (genreId: number) => void;
   onClearFilters: () => void;
 }
 
@@ -33,10 +40,14 @@ const MoviesFilters = ({
   title,
   startDate,
   endDate,
+  selectedGenreIds,
+  genres,
+  availableGenreIds,
   hasActiveFilters,
   onTitleChange,
   onStartDateChange,
   onEndDateChange,
+  onToggleGenre,
   onClearFilters,
 }: MoviesFiltersProps) => {
   const startDateObj = useMemo(() => {
@@ -62,6 +73,11 @@ const MoviesFilters = ({
       return undefined;
     }
   }, [endDate]);
+
+  const availableGenres = useMemo(
+    () => genres.filter((genre) => availableGenreIds.has(genre.id)),
+    [genres, availableGenreIds]
+  );
 
   return (
     <div className="space-y-4">
@@ -95,6 +111,56 @@ const MoviesFilters = ({
             onEndDateChange(date ? format(date, "yyyy-MM-dd") : null)
           }
         />
+        {/* Genres */}
+        <div className="flex-1">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
+                <span>
+                  {selectedGenreIds.length > 0
+                    ? `${selectedGenreIds.length} genre${
+                        selectedGenreIds.length > 1 ? "s" : ""
+                      } selected`
+                    : "Filter by genre"}
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-4" align="start">
+              <div className="space-y-2">
+                <Label>Genres</Label>
+                <div className="max-h-[300px] space-y-2 overflow-y-auto">
+                  {availableGenres.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      No genres available
+                    </p>
+                  ) : (
+                    availableGenres.map((genre) => (
+                      <div
+                        key={genre.id}
+                        className="flex items-center space-x-2"
+                      >
+                        <Checkbox
+                          id={`genre-${genre.id}`}
+                          checked={selectedGenreIds.includes(genre.id)}
+                          onCheckedChange={() => onToggleGenre(genre.id)}
+                        />
+                        <Label
+                          htmlFor={`genre-${genre.id}`}
+                          className="cursor-pointer text-sm font-normal"
+                        >
+                          {genre.name}
+                        </Label>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Clear Filters */}
