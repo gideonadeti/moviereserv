@@ -17,6 +17,99 @@ import {
 
 const MOVIES_PER_BATCH = 20;
 
+const buildFiltersFromSearchParams = (params: URLSearchParams) => {
+  const title = params.get("title") ?? defaultFilters.title;
+  const startDate = params.get("startDate");
+  const endDate = params.get("endDate");
+  const genreIdsParam = params.get("genreIds");
+  const genreIds =
+    genreIdsParam && genreIdsParam.length > 0
+      ? genreIdsParam
+          .split(",")
+          .map((value) => Number.parseInt(value, 10))
+          .filter((value) => !Number.isNaN(value))
+      : defaultFilters.genreIds;
+
+  const sortBy =
+    (params.get("sortBy") as FilterState["sortBy"]) ?? defaultFilters.sortBy;
+
+  const sortOrder =
+    (params.get("sortOrder") as FilterState["sortOrder"]) ??
+    defaultFilters.sortOrder;
+
+  return {
+    ...defaultFilters,
+    title,
+    startDate,
+    endDate,
+    genreIds,
+    sortBy,
+    sortOrder,
+  };
+};
+
+const buildSearchParamsFromFilters = (
+  filters: FilterState,
+  baseSearchParamsString: string
+) => {
+  const params = new URLSearchParams(baseSearchParamsString);
+  const trimmedTitle = filters.title.trim();
+
+  if (trimmedTitle) {
+    params.set("title", trimmedTitle);
+  } else {
+    params.delete("title");
+  }
+
+  if (filters.startDate) {
+    params.set("startDate", filters.startDate);
+  } else {
+    params.delete("startDate");
+  }
+
+  if (filters.endDate) {
+    params.set("endDate", filters.endDate);
+  } else {
+    params.delete("endDate");
+  }
+
+  if (filters.genreIds.length > 0) {
+    params.set("genreIds", filters.genreIds.join(","));
+  } else {
+    params.delete("genreIds");
+  }
+
+  if (filters.sortBy !== defaultFilters.sortBy) {
+    params.set("sortBy", filters.sortBy);
+  } else {
+    params.delete("sortBy");
+  }
+
+  if (filters.sortOrder !== defaultFilters.sortOrder) {
+    params.set("sortOrder", filters.sortOrder);
+  } else {
+    params.delete("sortOrder");
+  }
+
+  return params;
+};
+
+const replaceUrlIfChanged = (
+  router: ReturnType<typeof useRouter>,
+  pathname: string,
+  currentSearchParamsString: string,
+  nextParams: URLSearchParams
+) => {
+  const nextSearch = nextParams.toString();
+  const nextUrl = nextSearch ? `${pathname}?${nextSearch}` : pathname;
+  const currentSearch = currentSearchParamsString;
+  const currentUrl = currentSearch ? `${pathname}?${currentSearch}` : pathname;
+
+  if (nextUrl !== currentUrl) {
+    router.replace(nextUrl, { scroll: false });
+  }
+};
+
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,63 +124,35 @@ const Page = () => {
   const movies = moviesQuery.data || [];
   const genres = genresQuery.data || [];
   const searchParamsString = searchParams.toString();
+  const filters: FilterState = useMemo(
+    () => buildFiltersFromSearchParams(new URLSearchParams(searchParamsString)),
+    [searchParamsString]
+  );
 
   // Sync input from URL and reset pagination when URL changes
   useEffect(() => {
-    setTitleInput(searchParams.get("title") ?? "");
+    setTitleInput(filters.title ?? "");
     setDisplayedCount(MOVIES_PER_BATCH);
-  }, [searchParams]);
+  }, [filters.title]);
 
   // Debounce input changes into the URL (single source of truth)
   useEffect(() => {
     const handle = setTimeout(() => {
-      const params = new URLSearchParams(searchParamsString);
-      const trimmed = titleInput.trim();
+      const nextFilters: FilterState = {
+        ...filters,
+        title: titleInput,
+      };
 
-      if (trimmed) {
-        params.set("title", trimmed);
-      } else {
-        params.delete("title");
-      }
+      const nextParams = buildSearchParamsFromFilters(
+        nextFilters,
+        searchParamsString
+      );
 
-      const nextSearch = params.toString();
-      const nextUrl = nextSearch ? `${pathname}?${nextSearch}` : pathname;
-      const currentSearch = searchParamsString;
-      const currentUrl = currentSearch
-        ? `${pathname}?${currentSearch}`
-        : pathname;
-
-      if (nextUrl !== currentUrl) {
-        router.replace(nextUrl, { scroll: false });
-      }
+      replaceUrlIfChanged(router, pathname, searchParamsString, nextParams);
     }, 300);
 
     return () => clearTimeout(handle);
-  }, [titleInput, pathname, router, searchParamsString]);
-
-  // Derive filters directly from URL
-  const filters: FilterState = {
-    ...defaultFilters,
-    title: searchParams.get("title") ?? "",
-    startDate: searchParams.get("startDate"),
-    endDate: searchParams.get("endDate"),
-    genreIds: (() => {
-      const genreIdsParam = searchParams.get("genreIds");
-
-      if (!genreIdsParam) return defaultFilters.genreIds;
-
-      return genreIdsParam
-        .split(",")
-        .map((value) => Number.parseInt(value, 10))
-        .filter((value) => !Number.isNaN(value));
-    })(),
-    sortBy:
-      (searchParams.get("sortBy") as FilterState["sortBy"]) ??
-      defaultFilters.sortBy,
-    sortOrder:
-      (searchParams.get("sortOrder") as FilterState["sortOrder"]) ??
-      defaultFilters.sortOrder,
-  };
+  }, [titleInput, filters, pathname, router, searchParamsString]);
 
   const filteredMovies = useMoviesFilter(movies, filters);
   const displayedMovies = filteredMovies.slice(0, displayedCount);
@@ -104,41 +169,28 @@ const Page = () => {
     [movies]
   );
 
-  const replaceSearchParams = (updater: (params: URLSearchParams) => void) => {
-    const params = new URLSearchParams(searchParamsString);
-    updater(params);
+  const replaceFiltersInUrl = (nextFilters: FilterState) => {
+    const nextParams = buildSearchParamsFromFilters(
+      nextFilters,
+      searchParamsString
+    );
 
-    const nextSearch = params.toString();
-    const nextUrl = nextSearch ? `${pathname}?${nextSearch}` : pathname;
-    const currentSearch = searchParamsString;
-    const currentUrl = currentSearch
-      ? `${pathname}?${currentSearch}`
-      : pathname;
-
-    if (nextUrl !== currentUrl) {
-      router.replace(nextUrl, { scroll: false });
-    }
+    replaceUrlIfChanged(router, pathname, searchParamsString, nextParams);
   };
 
   const handleStartDateChange = (value: string | null) => {
     setDisplayedCount(MOVIES_PER_BATCH);
-    replaceSearchParams((params) => {
-      if (value) {
-        params.set("startDate", value);
-      } else {
-        params.delete("startDate");
-      }
+    replaceFiltersInUrl({
+      ...filters,
+      startDate: value,
     });
   };
 
   const handleEndDateChange = (value: string | null) => {
     setDisplayedCount(MOVIES_PER_BATCH);
-    replaceSearchParams((params) => {
-      if (value) {
-        params.set("endDate", value);
-      } else {
-        params.delete("endDate");
-      }
+    replaceFiltersInUrl({
+      ...filters,
+      endDate: value,
     });
   };
 
@@ -146,28 +198,21 @@ const Page = () => {
     setDisplayedCount(MOVIES_PER_BATCH);
     setTitleInput("");
 
-    replaceSearchParams((params) => {
-      params.delete("title");
-      params.delete("startDate");
-      params.delete("endDate");
-      params.delete("genreIds");
-    });
+    replaceFiltersInUrl(defaultFilters);
   };
 
   const handleToggleGenre = (genreId: number) => {
     setDisplayedCount(MOVIES_PER_BATCH);
-    replaceSearchParams((params) => {
-      const currentIds = filters.genreIds;
-      const exists = currentIds.includes(genreId);
-      const nextIds = exists
-        ? currentIds.filter((id) => id !== genreId)
-        : [...currentIds, genreId];
 
-      if (nextIds.length > 0) {
-        params.set("genreIds", nextIds.join(","));
-      } else {
-        params.delete("genreIds");
-      }
+    const currentIds = filters.genreIds;
+    const exists = currentIds.includes(genreId);
+    const nextIds = exists
+      ? currentIds.filter((id) => id !== genreId)
+      : [...currentIds, genreId];
+
+    replaceFiltersInUrl({
+      ...filters,
+      genreIds: nextIds,
     });
   };
 
@@ -176,18 +221,10 @@ const Page = () => {
     sortOrder: FilterState["sortOrder"]
   ) => {
     setDisplayedCount(MOVIES_PER_BATCH);
-    replaceSearchParams((params) => {
-      if (sortBy !== defaultFilters.sortBy) {
-        params.set("sortBy", sortBy);
-      } else {
-        params.delete("sortBy");
-      }
-
-      if (sortOrder !== defaultFilters.sortOrder) {
-        params.set("sortOrder", sortOrder);
-      } else {
-        params.delete("sortOrder");
-      }
+    replaceFiltersInUrl({
+      ...filters,
+      sortBy,
+      sortOrder,
     });
   };
 
@@ -215,16 +252,16 @@ const Page = () => {
             <Skeleton className="h-9 flex-1" />
           </div>
 
+          {/* Sort Skeleton */}
+          <div className="flex justify-end">
+            <Skeleton className="h-9 w-[200px]" />
+          </div>
+
           {/* Movies Grid Skeleton */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <Skeleton key={i.toString()} className="h-[500px] w-full" />
             ))}
-          </div>
-
-          {/* Sort Skeleton */}
-          <div className="flex justify-end">
-            <Skeleton className="h-9 w-[200px]" />
           </div>
         </div>
       </div>
