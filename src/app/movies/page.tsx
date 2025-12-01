@@ -8,7 +8,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import MovieCard from "../components/movie-card";
 import MoviesFilters from "../components/movies-filters";
 import useMovies from "../hooks/use-movies";
-import { type FilterState, useMoviesFilter } from "../hooks/use-movies-filter";
+import {
+  defaultFilters,
+  type FilterState,
+  useMoviesFilter,
+} from "../hooks/use-movies-filter";
 
 const MOVIES_PER_BATCH = 20;
 
@@ -26,7 +30,7 @@ const Page = () => {
   const movies = moviesQuery.data || [];
   const searchParamsString = searchParams.toString();
 
-  // Sync the input and reset pagination when the URL changes
+  // Sync input from URL and reset pagination when URL changes
   useEffect(() => {
     setTitleInput(searchParams.get("title") ?? "");
     setDisplayedCount(MOVIES_PER_BATCH);
@@ -61,12 +65,67 @@ const Page = () => {
 
   // Derive filters directly from URL
   const filters: FilterState = {
+    ...defaultFilters,
     title: searchParams.get("title") ?? "",
+    startDate: searchParams.get("startDate"),
+    endDate: searchParams.get("endDate"),
   };
 
   const filteredMovies = useMoviesFilter(movies, filters);
   const displayedMovies = filteredMovies.slice(0, displayedCount);
   const hasMore = displayedCount < filteredMovies.length;
+
+  const hasActiveFilters =
+    !!filters.title || !!filters.startDate || !!filters.endDate;
+
+  const replaceSearchParams = (updater: (params: URLSearchParams) => void) => {
+    const params = new URLSearchParams(searchParamsString);
+    updater(params);
+
+    const nextSearch = params.toString();
+    const nextUrl = nextSearch ? `${pathname}?${nextSearch}` : pathname;
+    const currentSearch = searchParamsString;
+    const currentUrl = currentSearch
+      ? `${pathname}?${currentSearch}`
+      : pathname;
+
+    if (nextUrl !== currentUrl) {
+      router.replace(nextUrl, { scroll: false });
+    }
+  };
+
+  const handleStartDateChange = (value: string | null) => {
+    setDisplayedCount(MOVIES_PER_BATCH);
+    replaceSearchParams((params) => {
+      if (value) {
+        params.set("startDate", value);
+      } else {
+        params.delete("startDate");
+      }
+    });
+  };
+
+  const handleEndDateChange = (value: string | null) => {
+    setDisplayedCount(MOVIES_PER_BATCH);
+    replaceSearchParams((params) => {
+      if (value) {
+        params.set("endDate", value);
+      } else {
+        params.delete("endDate");
+      }
+    });
+  };
+
+  const handleClearFilters = () => {
+    setDisplayedCount(MOVIES_PER_BATCH);
+    setTitleInput("");
+
+    replaceSearchParams((params) => {
+      params.delete("title");
+      params.delete("startDate");
+      params.delete("endDate");
+    });
+  };
 
   const handleLoadMore = () => {
     setDisplayedCount((prev) => prev + MOVIES_PER_BATCH);
@@ -109,7 +168,16 @@ const Page = () => {
         </div>
 
         {/* Filters */}
-        <MoviesFilters title={titleInput} onTitleChange={setTitleInput} />
+        <MoviesFilters
+          title={titleInput}
+          startDate={filters.startDate}
+          endDate={filters.endDate}
+          hasActiveFilters={hasActiveFilters}
+          onTitleChange={setTitleInput}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+          onClearFilters={handleClearFilters}
+        />
 
         {/* Movies Grid */}
         {displayedMovies.length === 0 ? (
