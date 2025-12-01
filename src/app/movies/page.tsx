@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,14 +20,15 @@ const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { moviesQuery } = useMovies();
-  const isLoading = moviesQuery.isPending;
+  const { moviesQuery, genresQuery } = useMovies();
+  const isLoading = moviesQuery.isPending || genresQuery.isPending;
   const [displayedCount, setDisplayedCount] = useState(MOVIES_PER_BATCH);
   const [titleInput, setTitleInput] = useState<string>(() => {
     return searchParams.get("title") ?? "";
   });
 
   const movies = moviesQuery.data || [];
+  const genres = genresQuery.data || [];
   const searchParamsString = searchParams.toString();
 
   // Sync input from URL and reset pagination when URL changes
@@ -69,6 +70,16 @@ const Page = () => {
     title: searchParams.get("title") ?? "",
     startDate: searchParams.get("startDate"),
     endDate: searchParams.get("endDate"),
+    genreIds: (() => {
+      const genreIdsParam = searchParams.get("genreIds");
+
+      if (!genreIdsParam) return defaultFilters.genreIds;
+
+      return genreIdsParam
+        .split(",")
+        .map((value) => Number.parseInt(value, 10))
+        .filter((value) => !Number.isNaN(value));
+    })(),
   };
 
   const filteredMovies = useMoviesFilter(movies, filters);
@@ -76,7 +87,15 @@ const Page = () => {
   const hasMore = displayedCount < filteredMovies.length;
 
   const hasActiveFilters =
-    !!filters.title || !!filters.startDate || !!filters.endDate;
+    !!filters.title ||
+    !!filters.startDate ||
+    !!filters.endDate ||
+    filters.genreIds.length > 0;
+
+  const availableGenreIds = useMemo(
+    () => new Set(movies.flatMap((movie) => movie.genre_ids)),
+    [movies]
+  );
 
   const replaceSearchParams = (updater: (params: URLSearchParams) => void) => {
     const params = new URLSearchParams(searchParamsString);
@@ -124,6 +143,24 @@ const Page = () => {
       params.delete("title");
       params.delete("startDate");
       params.delete("endDate");
+      params.delete("genreIds");
+    });
+  };
+
+  const handleToggleGenre = (genreId: number) => {
+    setDisplayedCount(MOVIES_PER_BATCH);
+    replaceSearchParams((params) => {
+      const currentIds = filters.genreIds;
+      const exists = currentIds.includes(genreId);
+      const nextIds = exists
+        ? currentIds.filter((id) => id !== genreId)
+        : [...currentIds, genreId];
+
+      if (nextIds.length > 0) {
+        params.set("genreIds", nextIds.join(","));
+      } else {
+        params.delete("genreIds");
+      }
     });
   };
 
@@ -172,10 +209,14 @@ const Page = () => {
           title={titleInput}
           startDate={filters.startDate}
           endDate={filters.endDate}
+          selectedGenreIds={filters.genreIds}
+          genres={genres}
+          availableGenreIds={availableGenreIds}
           hasActiveFilters={hasActiveFilters}
           onTitleChange={setTitleInput}
           onStartDateChange={handleStartDateChange}
           onEndDateChange={handleEndDateChange}
+          onToggleGenre={handleToggleGenre}
           onClearFilters={handleClearFilters}
         />
 
