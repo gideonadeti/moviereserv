@@ -1,24 +1,90 @@
 "use client";
 
+import {
+  isAfter,
+  isBefore,
+  isValid,
+  isWithinInterval,
+  parseISO,
+} from "date-fns";
 import { useMemo } from "react";
 import type { Movie } from "../types/movie";
 
 export interface FilterState {
   title: string;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 const defaultFilters: FilterState = {
   title: "",
+  startDate: null,
+  endDate: null,
 };
 
-export const useMoviesFilter = (movies: Movie[], filters: FilterState) => {
+const safeParseDate = (value: string | null): Date | null => {
+  if (!value) return null;
+
+  try {
+    const parsed = parseISO(value);
+
+    return isValid(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+export const useMoviesFilter = (
+  movies: Movie[],
+  filters: FilterState
+): Movie[] => {
   return useMemo(() => {
-    const term = filters.title.trim().toLowerCase();
+    let filtered = [...movies];
 
-    if (!term) return movies;
+    // Filter by title
+    if (filters.title.trim()) {
+      const searchTerm = filters.title.toLowerCase().trim();
 
-    return movies.filter((movie) => movie.title.toLowerCase().includes(term));
-  }, [movies, filters.title]);
+      filtered = filtered.filter((movie) =>
+        movie.title.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Filter by date range
+    const startDate = safeParseDate(filters.startDate);
+    const endDate = safeParseDate(filters.endDate);
+
+    if (startDate || endDate) {
+      filtered = filtered.filter((movie) => {
+        const movieDate = parseISO(movie.release_date);
+
+        if (startDate && endDate) {
+          return isWithinInterval(movieDate, {
+            start: startDate,
+            end: endDate,
+          });
+        }
+
+        if (startDate) {
+          return (
+            isAfter(movieDate, startDate) ||
+            movieDate.getTime() === startDate.getTime()
+          );
+        }
+
+        if (endDate) {
+          return (
+            isBefore(movieDate, endDate) ||
+            movieDate.getTime() === endDate.getTime()
+          );
+        }
+
+        return true;
+      });
+    }
+
+    return filtered;
+  }, [movies, filters]);
 };
 
 export { defaultFilters };
