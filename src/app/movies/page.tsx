@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import MovieCard from "../components/movie-card";
 import MoviesFilters from "../components/movies-filters";
+import MoviesSort from "../components/movies-sort";
 import useMovies from "../hooks/use-movies";
 import {
   defaultFilters,
@@ -80,6 +81,12 @@ const Page = () => {
         .map((value) => Number.parseInt(value, 10))
         .filter((value) => !Number.isNaN(value));
     })(),
+    sortBy:
+      (searchParams.get("sortBy") as FilterState["sortBy"]) ??
+      defaultFilters.sortBy,
+    sortOrder:
+      (searchParams.get("sortOrder") as FilterState["sortOrder"]) ??
+      defaultFilters.sortOrder,
   };
 
   const filteredMovies = useMoviesFilter(movies, filters);
@@ -164,6 +171,26 @@ const Page = () => {
     });
   };
 
+  const handleSortChange = (
+    sortBy: FilterState["sortBy"],
+    sortOrder: FilterState["sortOrder"]
+  ) => {
+    setDisplayedCount(MOVIES_PER_BATCH);
+    replaceSearchParams((params) => {
+      if (sortBy !== defaultFilters.sortBy) {
+        params.set("sortBy", sortBy);
+      } else {
+        params.delete("sortBy");
+      }
+
+      if (sortOrder !== defaultFilters.sortOrder) {
+        params.set("sortOrder", sortOrder);
+      } else {
+        params.delete("sortOrder");
+      }
+    });
+  };
+
   const handleLoadMore = () => {
     setDisplayedCount((prev) => prev + MOVIES_PER_BATCH);
   };
@@ -194,6 +221,11 @@ const Page = () => {
               <Skeleton key={i.toString()} className="h-[500px] w-full" />
             ))}
           </div>
+
+          {/* Sort Skeleton */}
+          <div className="flex justify-end">
+            <Skeleton className="h-9 w-[200px]" />
+          </div>
         </div>
       </div>
     );
@@ -211,21 +243,30 @@ const Page = () => {
           </p>
         </div>
 
-        {/* Filters */}
-        <MoviesFilters
-          title={titleInput}
-          startDate={filters.startDate}
-          endDate={filters.endDate}
-          selectedGenreIds={filters.genreIds}
-          genres={genres}
-          availableGenreIds={availableGenreIds}
-          hasActiveFilters={hasActiveFilters}
-          onTitleChange={setTitleInput}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
-          onToggleGenre={handleToggleGenre}
-          onClearFilters={handleClearFilters}
-        />
+        {/* Filters and Sort */}
+        <div className="space-y-4">
+          <MoviesFilters
+            title={titleInput}
+            startDate={filters.startDate}
+            endDate={filters.endDate}
+            selectedGenreIds={filters.genreIds}
+            genres={genres}
+            availableGenreIds={availableGenreIds}
+            hasActiveFilters={hasActiveFilters}
+            onTitleChange={setTitleInput}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+            onToggleGenre={handleToggleGenre}
+            onClearFilters={handleClearFilters}
+          />
+          <div className="flex justify-end">
+            <MoviesSort
+              sortBy={filters.sortBy}
+              sortOrder={filters.sortOrder}
+              onSortChange={handleSortChange}
+            />
+          </div>
+        </div>
 
         {/* Movies Grid */}
         {displayedMovies.length === 0 ? (
