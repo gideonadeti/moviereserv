@@ -181,6 +181,13 @@ const Page = () => {
           {/* Search Skeleton */}
           <Skeleton className="h-9 w-full" />
 
+          {/* Date Pickers and Genre Filter Skeleton */}
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Skeleton className="h-9 w-full sm:w-[200px]" />
+            <Skeleton className="h-9 w-full sm:w-[200px]" />
+            <Skeleton className="h-9 flex-1" />
+          </div>
+
           {/* Movies Grid Skeleton */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
