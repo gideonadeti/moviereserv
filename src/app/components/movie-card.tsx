@@ -24,7 +24,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
     <Link href={`/movies/${movie.id}`} className="block h-full">
       <Card className="relative h-full flex flex-col group transition-shadow hover:shadow-md pt-0 pb-2 overflow-hidden cursor-pointer">
         {/* Image Container - 4/5 of card height */}
-        <div className="w-full flex-4 overflow-hidden">
+        <div className="relative w-full flex-4 overflow-hidden">
           <Image
             src={imageUrl}
             alt={movie.title}
