@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  compareAsc,
   isAfter,
   isBefore,
   isValid,
@@ -10,11 +11,16 @@ import {
 import { useMemo } from "react";
 import type { Movie } from "../types/movie";
 
+export type SortField = "title" | "date" | "rating";
+export type SortOrder = "asc" | "desc";
+
 export interface FilterState {
   title: string;
   startDate: string | null;
   endDate: string | null;
   genreIds: number[];
+  sortBy: SortField;
+  sortOrder: SortOrder;
 }
 
 const defaultFilters: FilterState = {
@@ -22,6 +28,8 @@ const defaultFilters: FilterState = {
   startDate: null,
   endDate: null,
   genreIds: [],
+  sortBy: "title",
+  sortOrder: "asc",
 };
 
 const safeParseDate = (value: string | null): Date | null => {
@@ -91,6 +99,28 @@ export const useMoviesFilter = (
         movie.genre_ids.some((genreId) => filters.genreIds.includes(genreId))
       );
     }
+
+    // Sort movies
+    filtered.sort((a, b) => {
+      let comparison = 0;
+
+      switch (filters.sortBy) {
+        case "title":
+          comparison = a.title.localeCompare(b.title);
+          break;
+        case "date": {
+          const dateA = parseISO(a.release_date);
+          const dateB = parseISO(b.release_date);
+          comparison = compareAsc(dateA, dateB);
+          break;
+        }
+        case "rating":
+          comparison = a.vote_average - b.vote_average;
+          break;
+      }
+
+      return filters.sortOrder === "asc" ? comparison : -comparison;
+    });
 
     return filtered;
   }, [movies, filters]);
