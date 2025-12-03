@@ -22,7 +22,8 @@ const MOVIES_PER_BATCH = 20;
 const Page = () => {
   const { moviesQuery, genresQuery } = useMovies();
   const { showtimesQuery } = useShowtimes();
-  const isLoading = moviesQuery.isPending || genresQuery.isPending;
+  const isLoading =
+    moviesQuery.isPending || genresQuery.isPending || showtimesQuery.isPending;
   const movies = moviesQuery.data || [];
   const genres = genresQuery.data || [];
   const showtimes = showtimesQuery.data || [];
@@ -32,23 +33,28 @@ const Page = () => {
   const { displayedCount, reset, loadMore } =
     useMoviesPagination(MOVIES_PER_BATCH);
 
-  const filteredMovies = useMoviesFilter(movies, filters);
+  const movieIdsWithShowtimes = useMemo(
+    () => new Set(showtimes.map((showtime) => showtime.tmdbMovieId)),
+    [showtimes]
+  );
+
+  const filteredMovies = useMoviesFilter(
+    movies,
+    filters,
+    movieIdsWithShowtimes
+  );
   const displayedMovies = filteredMovies.slice(0, displayedCount);
   const hasMore = displayedCount < filteredMovies.length;
   const hasActiveFilters =
     !!filters.title ||
     !!filters.startDate ||
     !!filters.endDate ||
-    filters.genreIds.length > 0;
+    filters.genreIds.length > 0 ||
+    filters.onlyWithShowtimes;
 
   const availableGenreIds = useMemo(
     () => new Set(movies.flatMap((movie) => movie.genre_ids)),
     [movies]
-  );
-
-  const movieIdsWithShowtimes = useMemo(
-    () => new Set(showtimes.map((showtime) => showtime.tmdbMovieId)),
-    [showtimes]
   );
 
   const updateFilters = (patch: Partial<FilterState>) => {
@@ -102,11 +108,12 @@ const Page = () => {
           {/* Search Skeleton */}
           <Skeleton className="h-9 w-full" />
 
-          {/* Date Pickers and Genre Filter Skeleton */}
+          {/* Date Pickers, Genre Filter, and Showtimes Facet Skeleton */}
           <div className="flex flex-col gap-4 sm:flex-row">
             <Skeleton className="h-9 w-full sm:w-[200px]" />
             <Skeleton className="h-9 w-full sm:w-[200px]" />
             <Skeleton className="h-9 flex-1" />
+            <Skeleton className="h-9 w-full sm:w-[220px]" />
           </div>
 
           {/* Sort Skeleton */}
@@ -147,10 +154,16 @@ const Page = () => {
             genres={genres}
             availableGenreIds={availableGenreIds}
             hasActiveFilters={hasActiveFilters}
+            onlyWithShowtimes={filters.onlyWithShowtimes}
             onTitleChange={setTitleInput}
             onStartDateChange={handleStartDateChange}
             onEndDateChange={handleEndDateChange}
             onToggleGenre={handleToggleGenre}
+            onToggleOnlyWithShowtimes={() =>
+              updateFilters({
+                onlyWithShowtimes: !filters.onlyWithShowtimes,
+              })
+            }
             onClearFilters={handleClearFilters}
           />
           <div className="flex justify-end">
