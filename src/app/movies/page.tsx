@@ -13,9 +13,9 @@ import {
   type FilterState,
   useMoviesFilter,
 } from "../hooks/use-movies-filter";
+import { useMoviesPagination } from "../hooks/use-movies-pagination";
+import { useMoviesUrlFilters } from "../hooks/use-movies-url-filters";
 import useShowtimes from "../hooks/use-showtimes";
-import { useMoviesPagination } from "./use-movies-pagination";
-import { useMoviesUrlFilters } from "./use-movies-url-filters";
 
 const MOVIES_PER_BATCH = 20;
 
