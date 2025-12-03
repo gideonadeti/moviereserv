@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-export const useMoviesPagination = (pageSize: number) => {
+export const usePagination = (pageSize: number) => {
   const [displayedCount, setDisplayedCount] = useState(pageSize);
 
   const reset = useCallback(() => {
