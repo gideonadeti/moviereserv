@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { defaultFilters, type FilterState } from "../hooks/use-movies-filter";
+import { defaultFilters, type FilterState } from "./use-movies-filter";
 
 const buildFiltersFromSearchParams = (params: URLSearchParams): FilterState => {
   const title = params.get("title") ?? defaultFilters.title;
