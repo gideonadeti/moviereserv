@@ -31,6 +31,9 @@ const buildFiltersFromSearchParams = (params: URLSearchParams): FilterState => {
     startDate,
     endDate,
     genreIds,
+    onlyWithShowtimes:
+      params.get("onlyWithShowtimes") === "true" ||
+      defaultFilters.onlyWithShowtimes,
     sortBy,
     sortOrder,
   };
@@ -65,6 +68,12 @@ const buildSearchParamsFromFilters = (
     params.set("genreIds", filters.genreIds.join(","));
   } else {
     params.delete("genreIds");
+  }
+
+  if (filters.onlyWithShowtimes !== defaultFilters.onlyWithShowtimes) {
+    params.set("onlyWithShowtimes", String(filters.onlyWithShowtimes));
+  } else {
+    params.delete("onlyWithShowtimes");
   }
 
   if (filters.sortBy !== defaultFilters.sortBy) {
