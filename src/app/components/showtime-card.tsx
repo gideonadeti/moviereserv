@@ -1,9 +1,23 @@
 "use client";
 
-import { Calendar, Clock, MapPin, Ticket, Users } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  MoreHorizontal,
+  Ticket,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Movie } from "../types/movie";
 import type { Showtime } from "../types/showtime";
 import {
@@ -52,6 +66,36 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
           fill
           className="object-cover transition-transform group-hover:scale-105"
         />
+        {/* Dropdown Menu Button - Top Right Corner */}
+        <div className="absolute right-2 top-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="size-8 rounded-full bg-background/80 backdrop-blur-sm opacity-0 transition-opacity group-hover:opacity-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <MoreHorizontal />
+                <span className="sr-only">More options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // Placeholder - do nothing for now
+                }}
+              >
+                Make reservation
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Content Section */}
