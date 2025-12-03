@@ -13,8 +13,8 @@ import {
   type FilterState,
   useMoviesFilter,
 } from "../hooks/use-movies-filter";
-import { useMoviesPagination } from "../hooks/use-movies-pagination";
 import { useMoviesUrlFilters } from "../hooks/use-movies-url-filters";
+import { usePagination } from "../hooks/use-pagination";
 import useShowtimes from "../hooks/use-showtimes";
 
 const MOVIES_PER_BATCH = 20;
@@ -30,8 +30,7 @@ const Page = () => {
   const { filters, titleInput, setTitleInput, replaceFiltersInUrl } =
     useMoviesUrlFilters();
 
-  const { displayedCount, reset, loadMore } =
-    useMoviesPagination(MOVIES_PER_BATCH);
+  const { displayedCount, reset, loadMore } = usePagination(MOVIES_PER_BATCH);
 
   const movieIdsWithShowtimes = useMemo(
     () => new Set(showtimes.map((showtime) => showtime.tmdbMovieId)),
