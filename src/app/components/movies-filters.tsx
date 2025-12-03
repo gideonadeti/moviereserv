@@ -29,10 +29,12 @@ interface MoviesFiltersProps {
   genres: Genre[];
   availableGenreIds: Set<number>;
   hasActiveFilters: boolean;
+  onlyWithShowtimes: boolean;
   onTitleChange: (value: string) => void;
   onStartDateChange: (value: string | null) => void;
   onEndDateChange: (value: string | null) => void;
   onToggleGenre: (genreId: number) => void;
+  onToggleOnlyWithShowtimes: () => void;
   onClearFilters: () => void;
 }
 
@@ -44,10 +46,12 @@ const MoviesFilters = ({
   genres,
   availableGenreIds,
   hasActiveFilters,
+  onlyWithShowtimes,
   onTitleChange,
   onStartDateChange,
   onEndDateChange,
   onToggleGenre,
+  onToggleOnlyWithShowtimes,
   onClearFilters,
 }: MoviesFiltersProps) => {
   const startDateObj = useMemo(() => {
@@ -94,7 +98,7 @@ const MoviesFilters = ({
         />
       </InputGroup>
 
-      {/* Date range */}
+      {/* Date range / genres / showtimes */}
       <div className="flex flex-col gap-4 sm:flex-row">
         <DatePickerField
           label="Start date"
@@ -160,6 +164,20 @@ const MoviesFilters = ({
               </div>
             </PopoverContent>
           </Popover>
+        </div>
+        {/* Only movies with showtimes */}
+        <div className="flex items-center gap-2 sm:w-[220px]">
+          <Checkbox
+            id="only-with-showtimes"
+            checked={onlyWithShowtimes}
+            onCheckedChange={onToggleOnlyWithShowtimes}
+          />
+          <Label
+            htmlFor="only-with-showtimes"
+            className="cursor-pointer text-sm font-normal"
+          >
+            Only movies with showtimes
+          </Label>
         </div>
       </div>
 
