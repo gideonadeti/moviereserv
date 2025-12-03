@@ -13,6 +13,7 @@ import {
   type FilterState,
   useMoviesFilter,
 } from "../hooks/use-movies-filter";
+import useShowtimes from "../hooks/use-showtimes";
 import { useMoviesPagination } from "./use-movies-pagination";
 import { useMoviesUrlFilters } from "./use-movies-url-filters";
 
@@ -20,9 +21,11 @@ const MOVIES_PER_BATCH = 20;
 
 const Page = () => {
   const { moviesQuery, genresQuery } = useMovies();
+  const { showtimesQuery } = useShowtimes();
   const isLoading = moviesQuery.isPending || genresQuery.isPending;
   const movies = moviesQuery.data || [];
   const genres = genresQuery.data || [];
+  const showtimes = showtimesQuery.data || [];
   const { filters, titleInput, setTitleInput, replaceFiltersInUrl } =
     useMoviesUrlFilters();
 
@@ -41,6 +44,11 @@ const Page = () => {
   const availableGenreIds = useMemo(
     () => new Set(movies.flatMap((movie) => movie.genre_ids)),
     [movies]
+  );
+
+  const movieIdsWithShowtimes = useMemo(
+    () => new Set(showtimes.map((showtime) => showtime.tmdbMovieId)),
+    [showtimes]
   );
 
   const updateFilters = (patch: Partial<FilterState>) => {
@@ -164,7 +172,10 @@ const Page = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {displayedMovies.map((movie) => (
                 <div key={movie.id} className="h-[500px]">
-                  <MovieCard movie={movie} />
+                  <MovieCard
+                    movie={movie}
+                    hasShowtime={movieIdsWithShowtimes.has(movie.id)}
+                  />
                 </div>
               ))}
             </div>
