@@ -9,4 +9,16 @@ export interface Showtime {
   numberOfReservations: number;
 
   auditorium: Auditorium;
+  reservations: Reservation[];
+}
+
+export interface Reservation {
+  id: string;
+
+  reservedSeats: ReservedSeat[];
+}
+
+export interface ReservedSeat {
+  id: string;
+  seatId: string;
 }
