@@ -155,7 +155,8 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
       </Card>
       <CreateReservationDialog
         open={isCreateReservationDialogOpen}
-        price={showtime.price}
+        showtime={showtime}
+        movieTitle={movie.title}
         onOpenChange={setIsCreateReservationDialogOpen}
       />
     </>
