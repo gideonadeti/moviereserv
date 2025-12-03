@@ -20,6 +20,7 @@ export interface FilterState {
   startDate: string | null;
   endDate: string | null;
   genreIds: number[];
+  onlyWithShowtimes: boolean;
   sortBy: SortField;
   sortOrder: SortOrder;
 }
@@ -29,6 +30,7 @@ export const defaultFilters: FilterState = {
   startDate: null,
   endDate: null,
   genreIds: [],
+  onlyWithShowtimes: false,
   sortBy: "title",
   sortOrder: "asc",
 };
@@ -105,6 +107,19 @@ const filterByGenres = (movies: Movie[], genreIds: number[]) => {
   );
 };
 
+const filterByShowtimes = (
+  movies: Movie[],
+  onlyWithShowtimes: boolean,
+  movieIdsWithShowtimes?: Set<number>
+) => {
+  if (!onlyWithShowtimes) return movies;
+  if (!movieIdsWithShowtimes || movieIdsWithShowtimes.size === 0) {
+    return [];
+  }
+
+  return movies.filter((movie) => movieIdsWithShowtimes.has(movie.id));
+};
+
 const sortMovies = (
   movies: Movie[],
   sortBy: SortField,
@@ -136,7 +151,11 @@ const sortMovies = (
   return sorted;
 };
 
-export const applyMovieFilters = (movies: Movie[], filters: FilterState) => {
+export const applyMovieFilters = (
+  movies: Movie[],
+  filters: FilterState,
+  movieIdsWithShowtimes?: Set<number>
+) => {
   const afterTitle = filterByTitle(movies, filters.title);
   const afterDate = filterByDateRange(
     afterTitle,
@@ -145,10 +164,22 @@ export const applyMovieFilters = (movies: Movie[], filters: FilterState) => {
   );
 
   const afterGenres = filterByGenres(afterDate, filters.genreIds);
+  const afterShowtimes = filterByShowtimes(
+    afterGenres,
+    filters.onlyWithShowtimes,
+    movieIdsWithShowtimes
+  );
 
-  return sortMovies(afterGenres, filters.sortBy, filters.sortOrder);
+  return sortMovies(afterShowtimes, filters.sortBy, filters.sortOrder);
 };
 
-export const useMoviesFilter = (movies: Movie[], filters: FilterState) => {
-  return useMemo(() => applyMovieFilters(movies, filters), [movies, filters]);
+export const useMoviesFilter = (
+  movies: Movie[],
+  filters: FilterState,
+  movieIdsWithShowtimes?: Set<number>
+) => {
+  return useMemo(
+    () => applyMovieFilters(movies, filters, movieIdsWithShowtimes),
+    [movies, filters, movieIdsWithShowtimes]
+  );
 };
