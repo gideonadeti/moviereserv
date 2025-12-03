@@ -31,10 +31,29 @@ const useShowtimes = () => {
   const createReservationMutation = useMutation<
     Reservation,
     AxiosError<{ message: string }>,
-    { formValues: z.infer<typeof reservationSchema> }
+    { showtimeId: string; formValues: z.infer<typeof reservationSchema> }
   >({
-    mutationFn: async ({ formValues }) => {
-      return createReservation(formValues);
+    mutationFn: async ({ showtimeId, formValues }) => {
+      return createReservation(showtimeId, formValues);
+    },
+    onError: (error) => {
+      const message =
+        error.response?.data?.message || "Failed to create reservation";
+
+      toast.error(message, { id: "create-reservation-error" });
+    },
+    onSuccess: (reservation) => {
+      const balance = reservation.payment.balance;
+
+      if (balance > 0) {
+        toast.success(`Reservation made successfully. Balance: $${balance}`, {
+          id: "create-reservation-success",
+        });
+      } else {
+        toast.success("Reservation made successfully", {
+          id: "create-reservation-success",
+        });
+      }
     },
   });
 
