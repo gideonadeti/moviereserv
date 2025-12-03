@@ -15,10 +15,14 @@ export const fetchShowtimes = async () => {
 };
 
 export const createReservation = async (
+  showtimeId: string,
   formValues: z.infer<typeof reservationSchema>
 ) => {
   try {
-    const response = await axios.post("/reservations", formValues);
+    const response = await axios.post("/reservations", {
+      showtimeId,
+      ...formValues,
+    });
 
     return response.data;
   } catch (error) {
