@@ -1,6 +1,7 @@
 "use client";
 
 import { useRefreshAccessToken } from "@/app/components/auth-provider";
+import FourUpcomingShowtimes from "@/app/components/four-upcoming-showtimes";
 import LandingPage from "@/app/components/landing-page";
 import useMovies from "@/app/hooks/use-movies";
 import useUser from "@/app/hooks/use-user";
@@ -11,8 +12,6 @@ const Page = () => {
   const { isRefreshing } = useRefreshAccessToken();
   const isLoading =
     isRefreshing || moviesQuery.isPending || genresQuery.isPending;
-  const movies = moviesQuery.data || [];
-  const genres = genresQuery.data || [];
 
   // Show loading state while checking auth
   if (isLoading) {
@@ -23,13 +22,11 @@ const Page = () => {
     );
   }
 
-  // If authenticated, return null (as requested)
+  // If authenticated, show four upcoming showtimes
   if (user) {
     return (
-      <div>
-        <h1>Movies</h1>
-        <p>Total movies: {movies.length}</p>
-        <p>Total genres: {genres.length}</p>
+      <div className="min-h-screen">
+        <FourUpcomingShowtimes />
       </div>
     );
   }
