@@ -1,6 +1,7 @@
 "use client";
 
 import { format, parseISO } from "date-fns";
+import { Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,9 +10,10 @@ import type { Movie } from "../types/movie";
 
 interface MovieCardProps {
   movie: Movie;
+  hasShowtime?: boolean;
 }
 
-const MovieCard = ({ movie }: MovieCardProps) => {
+const MovieCard = ({ movie, hasShowtime }: MovieCardProps) => {
   const imageUrl = `${process.env.NEXT_PUBLIC_TMDB_SECURE_IMAGE_BASE_URL}${movie.poster_path}`;
 
   const formatDate = (dateString: string) => {
@@ -25,6 +27,12 @@ const MovieCard = ({ movie }: MovieCardProps) => {
       <Card className="relative h-full flex flex-col group transition-shadow hover:shadow-md pt-0 pb-2 overflow-hidden cursor-pointer">
         {/* Image Container - 4/5 of card height */}
         <div className="relative w-full flex-4 overflow-hidden">
+          {hasShowtime && (
+            <div className="absolute left-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-[0.65rem] font-medium text-white shadow-sm backdrop-blur">
+              <Ticket className="size-3" />
+              <span>Showtimes</span>
+            </div>
+          )}
           <Image
             src={imageUrl}
             alt={movie.title}
