@@ -20,11 +20,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import useShowtimes from "../hooks/use-showtimes";
+import type { Showtime } from "../types/showtime";
 import CustomDialogFooter from "./custom-dialog-footer";
 
 interface CreateReservationDialogProps {
   open: boolean;
-  price: number;
+  showtime: Showtime;
+  movieTitle: string;
   onOpenChange: (open: boolean) => void;
 }
 
@@ -35,13 +37,14 @@ export const reservationSchema = z.object({
 
 const CreateReservationDialog = ({
   open,
-  price,
+  showtime,
+  movieTitle,
   onOpenChange,
 }: CreateReservationDialogProps) => {
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const { createReservationMutation } = useShowtimes();
   const createReservationSchema = reservationSchema.refine(
-    (data) => data.amountPaid >= data.seatIds.length * price,
+    (data) => data.amountPaid >= data.seatIds.length * showtime.price,
     {
       message:
         "Amount paid must be greater than or equal to the number of seats times the price",
@@ -58,7 +61,7 @@ const CreateReservationDialog = ({
   });
 
   const onSubmit = (formValues: z.infer<typeof createReservationSchema>) => {
-    createReservationMutation.mutate({ formValues });
+    createReservationMutation.mutate({ showtimeId: showtime.id, formValues });
   };
 
   return (
@@ -69,7 +72,10 @@ const CreateReservationDialog = ({
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Make Reservation</DialogTitle>
+          <DialogTitle>
+            Make Reservation for{" "}
+            <span className="font-medium text-primary">{movieTitle}</span>
+          </DialogTitle>
           <DialogDescription>
             Select the seats you want to reserve and the amount you want to pay.
           </DialogDescription>
