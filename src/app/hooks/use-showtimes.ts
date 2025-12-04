@@ -6,6 +6,7 @@ import type z from "zod";
 import type { reservationSchema } from "../components/create-reservation-dialog";
 import type { Reservation, Showtime } from "../types/showtime";
 import {
+  cancelReservation,
   createReservation,
   fetchShowtimes,
 } from "../utils/general-query-functions";
@@ -60,9 +61,46 @@ const useShowtimes = () => {
     },
   });
 
+  const cancelReservationMutation = useMutation<
+    Reservation,
+    AxiosError<{ message: string }>,
+    { id: string }
+  >({
+    mutationFn: async ({ id }) => {
+      return cancelReservation(id);
+    },
+    onError: (error) => {
+      const message =
+        error.response?.data?.message || "Failed to cancel reservation";
+
+      toast.error(message, { id: "cancel-reservation-error" });
+    },
+    onSuccess: (reservation) => {
+      queryClient.setQueryData(["showtimes"], (old: Showtime[]) => {
+        return old.map((showtime) => {
+          if (showtime.id === reservation.showtimeId) {
+            return {
+              ...showtime,
+              reservations: showtime.reservations.filter(
+                (r) => r.id !== reservation.id
+              ),
+            };
+          }
+
+          return showtime;
+        });
+      });
+
+      toast.success("Reservation cancelled successfully", {
+        id: "cancel-reservation-success",
+      });
+    },
+  });
+
   return {
     showtimesQuery,
     createReservationMutation,
+    cancelReservationMutation,
   };
 };
 
