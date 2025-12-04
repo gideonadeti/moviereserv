@@ -6,11 +6,13 @@ import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -28,10 +30,12 @@ interface ShowtimesFiltersProps {
   effectiveMinPrice: number;
   effectiveMaxPrice: number;
   hasActiveFilters: boolean;
+  onlyWithReservations: boolean;
   onTitleChange: (value: string) => void;
   onStartDateChange: (value: string | null) => void;
   onEndDateChange: (value: string | null) => void;
   onPriceRangeChange: (min: number | null, max: number | null) => void;
+  onToggleOnlyWithReservations: () => void;
   onClearFilters: () => void;
 }
 
@@ -48,6 +52,8 @@ const ShowtimesFilters = ({
   onStartDateChange,
   onEndDateChange,
   onPriceRangeChange,
+  onlyWithReservations,
+  onToggleOnlyWithReservations,
   onClearFilters,
 }: ShowtimesFiltersProps) => {
   const startDateObj = useMemo(() => {
@@ -99,7 +105,7 @@ const ShowtimesFilters = ({
         />
       </InputGroup>
 
-      {/* Date range / price range */}
+      {/* Date range / price range / user reservations */}
       <div className="flex flex-col gap-4 sm:flex-row">
         <DatePickerField
           label="Start date"
@@ -176,6 +182,21 @@ const ShowtimesFilters = ({
               </div>
             </PopoverContent>
           </Popover>
+        </div>
+
+        {/* Only showtimes I've reserved */}
+        <div className="flex items-center gap-2 sm:w-[260px]">
+          <Checkbox
+            id="only-with-reservations"
+            checked={onlyWithReservations}
+            onCheckedChange={onToggleOnlyWithReservations}
+          />
+          <Label
+            htmlFor="only-with-reservations"
+            className="cursor-pointer text-sm font-normal"
+          >
+            Only showtimes I&apos;ve reserved
+          </Label>
         </div>
       </div>
 
