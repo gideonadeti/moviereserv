@@ -143,6 +143,7 @@ const useAuth = () => {
         "If an account exists with that email, a password reset link has been sent",
         { id: "forgot-password-success" }
       );
+      router.push("/auth/sign-in");
     },
   });
 
