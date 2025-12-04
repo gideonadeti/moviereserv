@@ -29,17 +29,37 @@ const Header = () => {
     signOutMutation.mutate();
   };
 
+  const navLinks = [
+    { href: "/movies", label: "Movies" },
+    { href: "/showtimes", label: "Showtimes" },
+  ];
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* Logo and Brand */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <span className="text-sm font-bold">M</span>
-            </div>
-            <span className="text-lg font-semibold">Moviereserv</span>
-          </Link>
+        <div className="container mx-auto flex h-16 items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-6">
+            {/* Logo and Brand */}
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                <span className="text-sm font-bold">M</span>
+              </div>
+              <span className="text-lg font-semibold">Moviereserv</span>
+            </Link>
+
+            {/* Public Nav */}
+            <nav className="flex items-center gap-4 text-sm font-medium">
+              {navLinks.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
           {/* Authentication UI */}
           <div className="flex items-center gap-4">
