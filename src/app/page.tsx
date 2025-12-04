@@ -24,11 +24,7 @@ const Page = () => {
 
   // If authenticated, show four upcoming showtimes
   if (user) {
-    return (
-      <div className="min-h-screen">
-        <FourUpcomingShowtimes />
-      </div>
-    );
+    return <FourUpcomingShowtimes />;
   }
 
   // If not authenticated, show landing page
