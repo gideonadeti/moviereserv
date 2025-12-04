@@ -92,7 +92,7 @@ const useAuth = () => {
       await clearRefreshTokenCookie();
 
       toast.success("Signed out successfully", { id: "sign-out-success" });
-      router.push("/auth/sign-in");
+      router.push("/");
     },
   });
 
@@ -119,7 +119,8 @@ const useAuth = () => {
       toast.success("Account deleted successfully", {
         id: "delete-account-success",
       });
-      router.push("/auth/sign-in");
+
+      router.push("/");
     },
   });
 
@@ -142,7 +143,6 @@ const useAuth = () => {
         "If an account exists with that email, a password reset link has been sent",
         { id: "forgot-password-success" }
       );
-      router.push("/auth/sign-in");
     },
   });
 
