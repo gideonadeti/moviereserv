@@ -15,6 +15,7 @@ export interface Reservation {
   id: string;
   showtimeId: string;
   userId: string;
+  amountCharged: number;
 
   payment: Payment;
   reservedSeats: ReservedSeat[];
