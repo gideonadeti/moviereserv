@@ -44,7 +44,8 @@ const ShowtimesPage = () => {
     !!filters.startDate ||
     !!filters.endDate ||
     filters.minPrice != null ||
-    filters.maxPrice != null;
+    filters.maxPrice != null ||
+    filters.onlyWithReservations;
 
   const { minPriceInData, maxPriceInData } = useMemo(() => {
     if (showtimes.length === 0) {
@@ -113,6 +114,7 @@ const ShowtimesPage = () => {
       endDate: null,
       minPrice: null,
       maxPrice: null,
+      onlyWithReservations: false,
     });
   };
 
@@ -173,10 +175,16 @@ const ShowtimesPage = () => {
             effectiveMinPrice={minPriceInData}
             effectiveMaxPrice={maxPriceInData}
             hasActiveFilters={hasActiveFilters}
+            onlyWithReservations={filters.onlyWithReservations}
             onTitleChange={setTitleInput}
             onStartDateChange={handleStartDateChange}
             onEndDateChange={handleEndDateChange}
             onPriceRangeChange={handlePriceRangeChange}
+            onToggleOnlyWithReservations={() =>
+              updateFilters({
+                onlyWithReservations: !filters.onlyWithReservations,
+              })
+            }
             onClearFilters={handleClearFilters}
           />
 
