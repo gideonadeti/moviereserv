@@ -2,10 +2,11 @@
 
 import { Calendar, Clock, MapPin, Ticket, Users } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import useUser from "../hooks/use-user";
 import type { Movie } from "../types/movie";
 import type { Showtime } from "../types/showtime";
 import {
@@ -17,6 +18,7 @@ import {
   matchShowtimeWithMovie,
 } from "../utils/showtime-utils";
 import CreateReservationDialog from "./create-reservation-dialog";
+import ShowtimeReservationsDialog from "./user-reservations-dialog";
 
 interface ShowtimeCardProps {
   showtime: Showtime;
@@ -28,6 +30,19 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
   const availableSeats = getAvailableSeats(showtime);
   const [isCreateReservationDialogOpen, setIsCreateReservationDialogOpen] =
     useState(false);
+  const [isReservationsDialogOpen, setIsReservationsDialogOpen] =
+    useState(false);
+  const { user } = useUser();
+
+  const userReservations = useMemo(
+    () =>
+      showtime.reservations?.filter(
+        (reservation) => reservation.userId === user?.id
+      ) ?? [],
+    [showtime.reservations, user?.id]
+  );
+
+  const hasUserReservations = userReservations.length > 0;
 
   if (!movie) {
     return null;
@@ -120,6 +135,15 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
           >
             {availableSeats > 0 ? "Make Reservation" : "Sold Out"}
           </Button>
+          {/* View My Reservations CTA (only when user has reservations for this showtime) */}
+          {hasUserReservations && (
+            <Button
+              variant="outline"
+              onClick={() => setIsReservationsDialogOpen(true)}
+            >
+              View my reservations ({userReservations.length})
+            </Button>
+          )}
         </div>
       </Card>
       <CreateReservationDialog
@@ -127,6 +151,12 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
         showtime={showtime}
         movieTitle={movie.title}
         onOpenChange={setIsCreateReservationDialogOpen}
+      />
+      <ShowtimeReservationsDialog
+        open={isReservationsDialogOpen}
+        onOpenChange={setIsReservationsDialogOpen}
+        showtime={showtime}
+        movieTitle={movie.title}
       />
     </>
   );
