@@ -44,7 +44,7 @@ axiosInstance.interceptors.request.use(async (config) => {
 
 axiosInstance.interceptors.response.use(
   (res) => res,
-  async (error: AxiosError) => {
+  async (error: AxiosError<{ message: string }>) => {
     const status = error.response?.status;
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
