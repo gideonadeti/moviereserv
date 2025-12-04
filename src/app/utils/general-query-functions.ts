@@ -31,3 +31,15 @@ export const createReservation = async (
     throw error;
   }
 };
+
+export const cancelReservation = async (id: string) => {
+  try {
+    const response = await axios.post(`/reservations/${id}/cancel`);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error from `cancelReservation`:", error);
+
+    throw error;
+  }
+};
