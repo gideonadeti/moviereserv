@@ -14,6 +14,7 @@ export interface Showtime {
 export interface Reservation {
   id: string;
   showtimeId: string;
+  userId: string;
 
   payment: Payment;
   reservedSeats: ReservedSeat[];
