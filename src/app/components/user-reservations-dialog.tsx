@@ -68,7 +68,7 @@ const UserReservationsDialog = ({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-4 max-h-[60vh] pr-2 overflow-y-auto">
             {userReservations.length === 0 ? (
               <div className="py-6 text-center text-sm text-muted-foreground">
                 You don&apos;t have any reservations for this showtime.
