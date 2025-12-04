@@ -69,40 +69,47 @@ const UserReservationsDialog = ({
           </DialogHeader>
 
           <div className="space-y-4 max-h-[60vh] overflow-y-auto">
-            {userReservations.map((reservation) => {
-              const seatLabels =
-                reservation.reservedSeats.length > 0
-                  ? reservation.reservedSeats
-                      .map(
-                        (seat) => seatLabelById.get(seat.seatId) ?? seat.seatId
-                      )
-                      .join(", ")
-                  : "No seats";
+            {userReservations.length === 0 ? (
+              <div className="py-6 text-center text-sm text-muted-foreground">
+                You don&apos;t have any reservations for this showtime.
+              </div>
+            ) : (
+              userReservations.map((reservation) => {
+                const seatLabels =
+                  reservation.reservedSeats.length > 0
+                    ? reservation.reservedSeats
+                        .map(
+                          (seat) =>
+                            seatLabelById.get(seat.seatId) ?? seat.seatId
+                        )
+                        .join(", ")
+                    : "No seats";
 
-              return (
-                <Card
-                  key={reservation.id}
-                  className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="space-y-1 text-sm">
-                    <p>
-                      <span className="font-medium">Amount charged:</span>{" "}
-                      {formatPrice(reservation.amountCharged)}
-                    </p>
-                    <p className="text-muted-foreground">
-                      <span className="font-medium">Seats:</span> {seatLabels}
-                    </p>
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => setReservationIdToCancel(reservation.id)}
+                return (
+                  <Card
+                    key={reservation.id}
+                    className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    Cancel reservation
-                  </Button>
-                </Card>
-              );
-            })}
+                    <div className="space-y-1 text-sm">
+                      <p>
+                        <span className="font-medium">Amount charged:</span>{" "}
+                        {formatPrice(reservation.amountCharged)}
+                      </p>
+                      <p className="text-muted-foreground">
+                        <span className="font-medium">Seats:</span> {seatLabels}
+                      </p>
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setReservationIdToCancel(reservation.id)}
+                    >
+                      Cancel reservation
+                    </Button>
+                  </Card>
+                );
+              })
+            )}
           </div>
         </DialogContent>
       </Dialog>
