@@ -44,7 +44,9 @@ const Header = () => {
               <div className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
                 <span className="text-sm font-bold">M</span>
               </div>
-              <span className="text-lg font-semibold">Moviereserv</span>
+              <span className="hidden text-lg font-semibold sm:inline">
+                Moviereserv
+              </span>
             </Link>
 
             {/* Public Nav */}
