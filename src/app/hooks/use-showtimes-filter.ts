@@ -2,6 +2,7 @@ import { parseISO } from "date-fns";
 
 import type { Movie } from "../types/movie";
 import type { Showtime } from "../types/showtime";
+import useUser from "./use-user";
 
 export type ShowtimesSortField = "startTime" | "price";
 
@@ -13,6 +14,11 @@ export interface ShowtimesFilterState {
   endDate: string | null;
   minPrice: number | null;
   maxPrice: number | null;
+  /**
+   * When enabled, only showtimes that the current user has at least one
+   * reservation for will be included in the results.
+   */
+  onlyWithReservations: boolean;
   sortBy: ShowtimesSortField;
   sortOrder: ShowtimesSortOrder;
 }
@@ -23,6 +29,7 @@ export const defaultShowtimesFilters: ShowtimesFilterState = {
   endDate: null,
   minPrice: null,
   maxPrice: null,
+  onlyWithReservations: false,
   sortBy: "startTime",
   sortOrder: "asc",
 };
@@ -64,6 +71,8 @@ export const useShowtimesFilter = ({
   movies,
   filters,
 }: UseShowtimesFilterParams) => {
+  const { user } = useUser();
+
   const startDate = toDateSafe(filters.startDate);
   const endDate = toDateSafe(filters.endDate);
   const trimmedTitle = filters.title.trim().toLowerCase();
@@ -102,6 +111,23 @@ export const useShowtimesFilter = ({
       const title = movie.title.toLowerCase();
 
       if (!title.includes(trimmedTitle)) {
+        return false;
+      }
+    }
+
+    // Only showtimes with reservations for the current user
+    if (filters.onlyWithReservations) {
+      // If there is no logged-in user, we can't have user-specific reservations
+      if (!user?.id) {
+        return false;
+      }
+
+      const hasUserReservation =
+        showtime.reservations?.some(
+          (reservation) => reservation.userId === user.id
+        ) ?? false;
+
+      if (!hasUserReservation) {
         return false;
       }
     }

@@ -27,6 +27,10 @@ const buildFiltersFromSearchParams = (
   const minPrice = parseNumberOrNull(params.get("minPrice"));
   const maxPrice = parseNumberOrNull(params.get("maxPrice"));
 
+  const onlyWithReservationsParam = params.get("onlyWithReservations");
+  const onlyWithReservations =
+    onlyWithReservationsParam === "1" || onlyWithReservationsParam === "true";
+
   const sortBy =
     (params.get("sortBy") as ShowtimesSortField | null) ??
     defaultShowtimesFilters.sortBy;
@@ -42,6 +46,7 @@ const buildFiltersFromSearchParams = (
     endDate,
     minPrice,
     maxPrice,
+    onlyWithReservations,
     sortBy,
     sortOrder,
   };
@@ -82,6 +87,12 @@ const buildSearchParamsFromFilters = (
     params.set("maxPrice", String(filters.maxPrice));
   } else {
     params.delete("maxPrice");
+  }
+
+  if (filters.onlyWithReservations) {
+    params.set("onlyWithReservations", "1");
+  } else {
+    params.delete("onlyWithReservations");
   }
 
   if (filters.sortBy !== defaultShowtimesFilters.sortBy) {
