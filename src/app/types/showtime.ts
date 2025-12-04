@@ -6,7 +6,6 @@ export interface Showtime {
   endTime: string;
   price: number;
   tmdbMovieId: number;
-  numberOfReservations: number;
 
   auditorium: Auditorium;
   reservations: Reservation[];

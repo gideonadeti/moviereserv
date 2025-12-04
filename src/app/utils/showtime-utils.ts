@@ -80,5 +80,5 @@ export const matchShowtimeWithMovie = (showtime: Showtime, movies: Movie[]) => {
  * Calculate available seats for a showtime
  */
 export const getAvailableSeats = (showtime: Showtime) => {
-  return showtime.auditorium.capacity - showtime.numberOfReservations;
+  return showtime.auditorium.capacity - showtime.reservations.length;
 };
