@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import {
 } from "../utils/general-query-functions";
 
 const useShowtimes = () => {
+  const queryClient = useQueryClient();
   const showtimesQuery = useQuery<Showtime[], AxiosError<{ message: string }>>({
     queryKey: ["showtimes"],
     queryFn: async () => {
@@ -43,6 +44,8 @@ const useShowtimes = () => {
       toast.error(message, { id: "create-reservation-error" });
     },
     onSuccess: (reservation) => {
+      queryClient.invalidateQueries({ queryKey: ["showtimes"] });
+
       const balance = reservation.payment.balance;
 
       if (balance > 0) {
