@@ -6,6 +6,11 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import useUser from "../hooks/use-user";
 import type { Movie } from "../types/movie";
 import type { Showtime } from "../types/showtime";
@@ -129,12 +134,24 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
           </div>
 
           {/* Make Reservation Button */}
-          <Button
-            onClick={() => setIsCreateReservationDialogOpen(true)}
-            disabled={availableSeats === 0}
-          >
-            {availableSeats > 0 ? "Make Reservation" : "Sold Out"}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <Button
+                  onClick={() => setIsCreateReservationDialogOpen(true)}
+                  disabled={availableSeats === 0 || !user}
+                  className="w-full"
+                >
+                  {availableSeats > 0 ? "Make Reservation" : "Sold Out"}
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {(availableSeats === 0 || !user) && (
+              <TooltipContent>
+                {!user ? "Sign in to make reservation" : "Sold out"}
+              </TooltipContent>
+            )}
+          </Tooltip>
           {/* View My Reservations CTA (only when user has reservations for this showtime) */}
           {hasUserReservations && (
             <Button
