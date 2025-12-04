@@ -16,7 +16,7 @@ const CustomDialogFooter = ({
   handleSubmit,
 }: CustomDialogFooterProps) => {
   return (
-    <DialogFooter>
+    <DialogFooter className="flex flex-row gap-2 justify-end">
       <Button
         variant="secondary"
         onClick={() => handleCancel()}
