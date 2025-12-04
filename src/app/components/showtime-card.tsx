@@ -1,24 +1,11 @@
 "use client";
 
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  MoreHorizontal,
-  Ticket,
-  Users,
-} from "lucide-react";
+import { Calendar, Clock, MapPin, Ticket, Users } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type { Movie } from "../types/movie";
 import type { Showtime } from "../types/showtime";
 import {
@@ -62,45 +49,19 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
 
   return (
     <>
-      <Card className="relative h-full flex flex-col group transition-shadow hover:shadow-md overflow-hidden pt-0 pb-2">
+      <Card className="relative h-full flex flex-col group transition-shadow hover:shadow-md overflow-hidden py-0">
         {/* Movie Poster */}
-        <div className="relative w-full flex-4 overflow-hidden">
+        <div className="relative w-full flex-1 overflow-hidden">
           <Image
             src={imageUrl}
             alt={movie.title}
             fill
             className="object-cover transition-transform group-hover:scale-105"
           />
-          {/* Dropdown Menu Button - Top Right Corner */}
-          <div className="absolute right-2 top-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="size-8 rounded-full bg-background/80 backdrop-blur-sm opacity-0 transition-opacity group-hover:opacity-100"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  <MoreHorizontal />
-                  <span className="sr-only">More options</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => setIsCreateReservationDialogOpen(true)}
-                >
-                  Make reservation
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 flex flex-col gap-3 p-3">
+        <div className="flex flex-col gap-3 p-3">
           {/* Movie Title */}
           <h3 className="font-semibold text-lg line-clamp-2">{movie.title}</h3>
 
@@ -151,6 +112,14 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
                 : "Sold out"}
             </span>
           </div>
+
+          {/* Make Reservation Button */}
+          <Button
+            onClick={() => setIsCreateReservationDialogOpen(true)}
+            disabled={availableSeats === 0}
+          >
+            {availableSeats > 0 ? "Make Reservation" : "Sold Out"}
+          </Button>
         </div>
       </Card>
       <CreateReservationDialog
