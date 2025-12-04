@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
@@ -41,6 +42,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </AuthProvider>
         </QcProvider>
         <Toaster richColors />
+        <Analytics />
       </body>
     </html>
   );
