@@ -71,7 +71,7 @@ const ShowtimeCard = ({ showtime, movies }: ShowtimeCardProps) => {
             <span>
               {isSameCalendarDate
                 ? startDateFormatted
-                : `${startDateFormatted} – ${endDateFormatted}`}
+                : `${startDateFormatted} - ${endDateFormatted}`}
             </span>
           </div>
 
