@@ -2,7 +2,7 @@
 
 A modern, responsive web application for booking movie tickets. Built with Next.js and featuring a beautiful UI with dark mode support, real-time seat selection, and seamless movie browsing powered by The Movie Database (TMDB) API. This frontend client communicates with the [movie-reservation-system](https://github.com/gideonadeti/movie-reservation-system) backend API to provide a complete movie ticket reservation experience.
 
-[Live Demo](https://moviereserv.vercel.app) | [Video Walkthrough](https://youtu.be/kkSGNebMShg)
+[Live Demo](https://moviereserv.vercel.app) | [Video Walkthrough](https://youtu.be/uXvKouVCD5s)
 
 ## Table of Contents
 
